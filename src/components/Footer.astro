@@ -1,0 +1,30 @@
+---
+import { siteConfig } from '@/site.config';
+---
+
+<footer class="mt-auto border-t border-accent/10">
+  <div
+    class:list={[
+      'mx-auto',
+      siteConfig.layout.width,
+      'px-3',
+      'pb-10',
+      'pt-10',
+      'md:pt-16',
+    ]}
+  >
+    <nav aria-label="Footer" class="text-text-body">
+      <ul class="flex flex-wrap items-center justify-center gap-4 text-scale--1">
+        <li>
+          <a class="hover:underline" href="/about/">このサイトについて</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="mt-10 flex flex-col items-center justify-center">
+      <small class="text-scale--1 text-text-body/70">
+        © {new Date().getFullYear()} {siteConfig.title}
+      </small>
+    </div>
+  </div>
+</footer>

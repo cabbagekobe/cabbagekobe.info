@@ -1,0 +1,168 @@
+---
+import { getCollection } from 'astro:content';
+import OGPCard from '@/components/articles/OGPCard.astro';
+import RelatedArticles from '@/components/articles/RelatedArticles.astro';
+import TableOfContents from '@/components/articles/TableOfContents.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Base from '@/layouts/Base.astro';
+import { type Article, formatDate, isArticleVisible } from '@/lib/content';
+import { getRelatedArticles } from '@/lib/content/articles';
+import { createBreadcrumbSchema } from '@/lib/schema';
+import { siteConfig } from '@/site.config';
+
+export async function getStaticPaths() {
+  const allCollectionEntries = await getCollection('articles');
+
+  const allArticles: Article[] = allCollectionEntries.map((entry) => {
+    const slug = entry.slug;
+    const permalink = entry.data.permalink || `/articles/${slug}`;
+
+    return {
+      ...entry,
+      frontmatter: entry.data,
+      permalink: permalink,
+    } as Article;
+  });
+
+  const articlesToBuild = import.meta.env.PROD
+    ? allArticles.filter(({ frontmatter }) => isArticleVisible(frontmatter))
+    : allArticles;
+
+  return articlesToBuild.map((currentArticle) => {
+    return {
+      params: { slug: currentArticle.slug },
+      props: { article: currentArticle },
+    };
+  });
+}
+
+const { article } = Astro.props;
+const { frontmatter, slug } = article;
+
+const crumbs = [{ href: '/', label: 'Home' }];
+crumbs.push({ label: frontmatter.title });
+
+// カバー画像のパスを解決
+let coverSrc: string | undefined;
+if (frontmatter.cover_image) {
+  const src = frontmatter.cover_image.src;
+
+  coverSrc = src.startsWith('/src/content/articles/')
+    ? src.replace('/src/content', '')
+    : src;
+}
+
+// TOCの取得
+const { Content, headings } = await article.render();
+
+const { title, summary, meta_title, meta_description } = frontmatter;
+
+if (import.meta.env.PROD && !isArticleVisible(frontmatter)) {
+  return Astro.redirect('/404');
+}
+
+const allArticles = (await getCollection('articles')).map((entry) => {
+  const slug = entry.slug;
+  const permalink = entry.data.permalink || `/articles/${slug}`;
+  return {
+    ...entry,
+    frontmatter: entry.data,
+    permalink,
+  } as Article;
+});
+const related = getRelatedArticles(article, allArticles);
+
+const articleSchema = {
+  '@type': 'Article',
+  '@id': Astro.url.href,
+  headline: title,
+  description: summary,
+  image: coverSrc ? new URL(coverSrc, Astro.url.origin).href : undefined,
+  datePublished: frontmatter.published_at.toISOString(),
+  dateModified: (
+    frontmatter.updated_at ?? frontmatter.published_at
+  ).toISOString(),
+  publisher: {
+    '@type': 'Organization',
+    name: siteConfig.title,
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/favicon.ico', Astro.url.origin).href,
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.href,
+  },
+};
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.href);
+const schemas = [articleSchema, breadcrumbSchema];
+---
+
+<Base
+  title={meta_title ?? title ?? 'Article'}
+  description={meta_description ?? summary}
+  permalink={article.permalink}
+  og={{
+    type: 'article',
+    image: coverSrc,
+    publishedTime: frontmatter.published_at.toISOString(),
+    modifiedTime: (
+      frontmatter.updated_at ?? frontmatter.published_at
+    ).toISOString(),
+  }}
+  schemas={schemas}
+>
+  <Breadcrumb crumbs={crumbs} />
+
+  <article>
+    <div class="mb-12">
+      <h1 class="text-scale-3 font-extrabold mb-4 leading-tight">{title}</h1>
+
+      {
+        coverSrc && (
+          <figure class="mb-4">
+            <img
+              src={coverSrc}
+              alt={meta_title ?? title ?? ''}
+              loading="lazy"
+              class="w-full h-auto rounded-lg"
+            />
+            {frontmatter.cover_caption && (
+              <figcaption class="mt-2 text-scale-0 text-center text-text-body/80">
+                {frontmatter.cover_caption}
+              </figcaption>
+            )}
+          </figure>
+        )
+      }
+
+      <div class="article-meta flex items-center text-scale--1 text-text-body/70">
+        {
+          frontmatter.published_at && (
+            <time datetime={frontmatter.published_at.toISOString()} class="mr-3">
+              {formatDate(frontmatter.published_at)}
+            </time>
+          )
+        }
+      </div>
+      {summary && <p class="text-scale--1 text-text-body/90 my-6">{summary}</p>}
+
+      {/* TOCを記事コンテンツの直前に配置 */}
+      {headings && headings.length > 0 && frontmatter.show_toc === true && (
+        <TableOfContents headings={headings} />
+      )}
+    </div>
+
+    {/* MDXコンテンツのレンダリング */}
+    <div class="article-content">
+      <Content
+          components={{
+          OGPCard
+          }}
+        />
+    </div>
+  </article>
+
+  <RelatedArticles related={related} />
+</Base>

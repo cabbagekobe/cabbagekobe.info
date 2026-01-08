@@ -1,0 +1,49 @@
+{
+  "name": "favolight-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run prebuild && astro dev",
+    "prebuild": "node src/scripts/fetch-ogp.mjs",
+    "build": "astro build",
+    "preview": "npm run prebuild && astro preview",
+    "clean": "rimraf dist .astro",
+    "new:article": "tsx src/scripts/new-article.ts",
+    "format": "npx @biomejs/biome format --write .",
+    "lint": "npx @biomejs/biome check --write .",
+    "list:routes": "tsx src/scripts/list-all-routes.ts",
+    "screenshot:pages": "tsx src/scripts/screenshot-pages.ts",
+    "start": "npm run dev",
+    "test": "vitest --run",
+    "check-all": "astro build && npm run lint && npm run test"
+  },
+  "devDependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "@biomejs/biome": "^2.3.8",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@types/node": "^24.10.1",
+    "@types/prompts": "^2.4.9",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1",
+    "astro": "^5.16.4",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
+    "jsdom": "^27.3.0",
+    "marked": "^17.0.1",
+    "playwright": "^1.45.2",
+    "prompts": "^2.4.2",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.13",
+    "tsx": "^4.21.0",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/rss": "^4.0.14",
+    "@astrojs/sitemap": "^3.6.0",
+    "@playform/compress": "^0.2.0",
+    "open-graph-scraper": "^6.11.0",
+    "rehype-slug": "^6.0.0"
+  }
+}

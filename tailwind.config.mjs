@@ -1,0 +1,88 @@
+/**** Tailwind Config ****/
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: 'class',
+  content: [
+    './src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}',
+    './content/**/*.{md,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: 'rgb(var(--color-background-rgb) / <alpha-value>)',
+        'text-body': 'rgb(var(--color-text-body-rgb) / <alpha-value>)',
+        accent: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
+        primary: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
+        line: 'rgb(var(--color-line-rgb) / <alpha-value>)',
+        'card-background':
+          'rgb(var(--color-card-background-rgb) / <alpha-value>)',
+      },
+      fontFamily: {
+        sans: [
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          '"Noto Sans"',
+          '"Noto Sans CJK JP"',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"',
+        ],
+      },
+      fontSize: {
+        'scale--1': 'clamp(0.7rem, calc(0.5378rem + 0.8628vw), 1.05rem)',
+        'scale-0': 'clamp(0.875rem, calc(0.6223rem + 1.0785vw), 1.3125rem)',
+        'scale-1': 'clamp(1.09375rem, calc(0.8878rem + 1.2828vw), 1.640625rem)',
+        'scale-2':
+          'clamp(1.3671875rem, calc(1.1098rem + 1.6035vw), 2.05078125rem)',
+        'scale-3':
+          'clamp(1.708984375rem, calc(1.3872rem + 2.0044vw), 2.5634765625rem)',
+        'scale-4':
+          'clamp(2.13623046875rem, calc(1.734rem + 2.5055vw), 3.204345703125rem)',
+      },
+    },
+  },
+  plugins: [],
+  safelist: [
+    'bg-card-background',
+    'border',
+    'border-line',
+    'duration-300',
+    'flex',
+    'flex-1',
+    'flex-col',
+    'flex-shrink-0',
+    'font-bold',
+    'h-36',
+    'hover:border-accent/50',
+    'hover:shadow-md',
+    'justify-center',
+    'line-clamp-2',
+    'max-w-full',
+    'mt-1',
+    'mt-auto',
+    'my-6',
+    'my-8',
+    'not-prose',
+    'object-cover',
+    'object-center',
+    'overflow-hidden',
+    'pt-1',
+    'rounded-lg',
+    'shadow-sm',
+    'text-sm',
+    'text-text-body/70',
+    'text-text-body/90',
+    'text-text-title',
+    'text-xs',
+    'transition-all',
+    'truncate',
+    'w-48',
+  ],
+};

@@ -1,0 +1,69 @@
+---
+import type { Heading } from '@/lib/content/types';
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// `<h2>` と `<h3>` のみ抽出
+const filteredHeadings = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+
+// 目次を非再帰的にネストされたリストとして構築する関数
+function renderToc(headings: Heading[]): string {
+  if (!headings || headings.length === 0) {
+    return '';
+  }
+
+  let html = '';
+  let currentDepth = headings[0].depth; // 最初の見出しの深さで初期化
+  let openUlTags = 0; // 開いている <ul> タグの数
+
+  headings.forEach((heading) => {
+    if (heading.depth > currentDepth) {
+      // より深いレベルの見出し -> 新しい <ul> を開く
+      html += `<ul class="pl-4 my-1">`;
+      openUlTags++;
+    } else if (heading.depth < currentDepth) {
+      // より浅いレベルの見出し -> 適切な数の </ul> を閉じる
+      while (heading.depth < currentDepth && openUlTags > 0) {
+        html += `</ul>`;
+        openUlTags--;
+        currentDepth--; // 現在の深さを更新
+      }
+    }
+    // 現在の深さを更新
+    currentDepth = heading.depth;
+
+    html += `<li><a href="#${heading.slug}">${heading.text}</a></li>`;
+  });
+
+  // 残りの開いている <ul> タグを閉じる
+  while (openUlTags > 0) {
+    html += `</ul>`;
+    openUlTags--;
+  }
+
+  return html;
+}
+
+const tocListHtml = renderToc(filteredHeadings); // H2から開始
+
+// 空のリストが生成された場合は表示しない
+const finalTocHtml = tocListHtml.trim()
+  ? `<ul class="text-scale--1">${tocListHtml}</ul>`
+  : '';
+---
+
+{
+  finalTocHtml && (
+    <nav aria-label="目次" class="p-4 border border-line rounded-lg bg-card-background mb-8">
+      <h2 class="text-xl font-bold mb-4">目次</h2>
+      <Fragment set:html={finalTocHtml} />
+    </nav>
+  )
+}
+

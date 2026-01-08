@@ -1,0 +1,32 @@
+---
+import { getOgp } from '@/lib/ogp';
+
+interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+const ogp = await getOgp(url);
+---
+{ogp ? (
+  <div class="my-6">
+    <a href={ogp.url || url} target="_blank" rel="noopener noreferrer" class="flex h-36 max-w-full overflow-hidden rounded-lg border border-line bg-card-background shadow-sm transition-all duration-300 hover:border-accent/50 hover:shadow-md">
+      {ogp.image && (
+        <div class="w-48 flex-shrink-0">
+          <img src={ogp.image} alt={ogp.title || ''} class="h-full w-full object-cover object-center" />
+        </div>
+      )}
+      <div class="flex flex-1 flex-col justify-center p-4 overflow-hidden">
+        <div class="truncate font-bold text-text-title">{ogp.title || url}</div>
+        <div class="mt-1 text-sm text-text-body/90">{ogp.description || ''}</div>
+        <div class="mt-auto truncate pt-1 text-xs text-text-body/70">{ogp.siteName || new URL(url).hostname}</div>
+      </div>
+    </a>
+  </div>
+) : (
+  <p>
+    <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+    <br />
+    <em>(OGP情報の取得に失敗しました)</em>
+  </p>
+)}

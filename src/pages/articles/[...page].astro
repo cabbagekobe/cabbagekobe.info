@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import type { Page } from 'astro';
+import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { isArticleVisible } from '@/lib/content/filters';
+import type { Article } from '@/lib/content/types';
+import { siteConfig } from '@/site.config';
+
+export async function getStaticPaths({ paginate }) {
+  const allCollectionEntries = await getCollection('articles');
+
+  const allArticles: Article[] = allCollectionEntries.map((entry) => {
+    const slug = entry.slug;
+
+    const permalink = entry.data.permalink || `/articles/${slug}`;
+
+    return {
+      ...entry,
+      frontmatter: entry.data,
+      permalink: permalink,
+    } as Article;
+  });
+
+  const publishedArticles = allArticles
+    .filter(({ frontmatter }) => isArticleVisible(frontmatter))
+    .sort(
+      (a, b) =>
+        b.frontmatter.published_at.valueOf() -
+        a.frontmatter.published_at.valueOf(),
+    );
+
+  return paginate(publishedArticles, { pageSize: siteConfig.articlesPerPage });
+}
+
+const { page } = Astro.props;
+const title = `記事一覧 - ${siteConfig.title}`;
+const crumbs = [{ label: 'Home', href: '/' }, { label: '記事一覧' }];
+---
+<ArticleListLayout
+  title={title}
+  articles={page.data}
+  crumbs={crumbs}
+  page={page}
+  permalink={Astro.url.pathname}
+/>

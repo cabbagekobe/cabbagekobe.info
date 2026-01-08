@@ -1,0 +1,31 @@
+---
+import { formatDate } from '@/lib/content';
+import type { Article } from '@/lib/content/types';
+
+interface Props {
+  related: Article[];
+}
+
+const { related } = Astro.props;
+---
+
+{
+  related.length > 0 && (
+    <aside class="related-articles mt-12">
+      <h2 class="text-scale-3 font-bold mt-12 mb-6 border-b-2 border-line pb-2">関連記事</h2>
+      <ul class="list-none p-0 space-y-4">
+        {related.map((r) => (
+          <li>
+            <a href={r.permalink} class="text-scale-0 hover:underline text-text-body">{r.frontmatter.title}</a>
+            {r.frontmatter.published_at && (
+              <small class="text-text-body/70 text-scale--1">
+                {' — '}
+                {formatDate(r.frontmatter.published_at)}
+              </small>
+            )}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}

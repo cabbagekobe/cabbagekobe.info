@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { isArticleVisible } from '@/lib/content/filters';
+import type { Article } from '@/lib/content/types';
+import { siteConfig } from '@/site.config';
+
+const allCollectionEntries = await getCollection('articles');
+
+const allArticles: Article[] = allCollectionEntries.map((entry) => {
+  const slug = entry.slug;
+  const permalink = entry.data.permalink || `/articles/${slug}`;
+
+  return {
+    ...entry,
+    frontmatter: entry.data,
+    permalink: permalink,
+  } as Article;
+});
+
+const items = allArticles
+  .filter(({ frontmatter }) => isArticleVisible(frontmatter))
+  .sort(
+    (a, b) =>
+      b.frontmatter.published_at.valueOf() -
+      a.frontmatter.published_at.valueOf(),
+  )
+  .slice(0, 100);
+const title = `${siteConfig.title}`;
+
+const crumbs = [{ label: 'Home' }];
+---
+<ArticleListLayout
+  title={title}
+  articles={items}
+  crumbs={crumbs}
+  permalink="/"
+/>

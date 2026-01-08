@@ -1,0 +1,45 @@
+---
+import type { Page } from 'astro';
+import ArticleListItem from '@/components/ArticleListItem.astro';
+import type { Crumb } from '@/components/Breadcrumb.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Pagination from '@/components/Pagination.astro';
+import Base from '@/layouts/Base.astro';
+import type { Article } from '@/lib/content';
+import { createBreadcrumbSchema } from '@/lib/schema';
+
+interface Props {
+  title?: string;
+  description?: string;
+  permalink: string;
+  articles: Article[];
+  crumbs?: Crumb[];
+  page?: Page<Article>;
+}
+
+const { title, description, permalink, articles, crumbs, page } = Astro.props;
+
+const webPageSchema = {
+  '@type': 'WebPage',
+  '@id': Astro.url.href,
+  name: title,
+  description: description,
+  url: Astro.url.href,
+};
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.href);
+const schemas = [webPageSchema, breadcrumbSchema];
+---
+<Base title={title} description={description} permalink={permalink} schemas={schemas}>
+  {crumbs && crumbs.length > 0 && <Breadcrumb crumbs={crumbs} />}
+  {articles.length === 0 ? (
+    <p>まだ記事がありません。</p>
+  ) : (
+    <ul class="list-none p-0">
+      {articles.map((article) => (
+        <li class="border-b border-line pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0"><ArticleListItem article={article} /></li>
+      ))}
+    </ul>
+  )}
+
+  {page && <Pagination page={page} />}
+</Base>

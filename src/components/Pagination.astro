@@ -1,0 +1,23 @@
+---
+import type { Page } from 'astro';
+import type { Article } from '@/lib/content';
+
+interface Props {
+  page: Page<Article>;
+}
+
+const { page } = Astro.props;
+---
+
+<nav aria-label="Pagination" class="flex justify-center gap-8 text-scale--1">
+  {page.url.prev && (
+    <a href={page.url.prev} class="hover:underline">
+      &laquo; 前のページ
+    </a>
+  )}
+  {page.url.next && (
+    <a href={page.url.next} class="hover:underline">
+      次のページ &raquo;
+    </a>
+  )}
+</nav>

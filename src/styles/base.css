@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens (必要に応じて拡張) */
+:root {
+  --page-max: 72rem;
+
+  /* Light Theme */
+  --color-background-rgb: 232 232 232;
+  --color-text-body-rgb: 42 42 42;
+  --color-accent-rgb: 106 123 118;
+  --color-line-rgb: 229 229 224;
+  --color-card-background-rgb: 255 255 255;
+}
+
+.dark {
+  /* Dark Theme */
+  --color-background-rgb: 28 28 28;
+  --color-text-body-rgb: 237 237 237;
+  --color-accent-rgb: 106 123 118;
+  --color-line-rgb: 42 42 42;
+  --color-card-background-rgb: 44 44 44;
+}
+
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}

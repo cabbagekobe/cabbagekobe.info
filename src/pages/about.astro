@@ -1,0 +1,40 @@
+---
+import { getEntry } from 'astro:content';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Base from '@/layouts/Base.astro';
+import type { AboutFrontmatter } from '@/lib/content/types';
+import { createBreadcrumbSchema } from '@/lib/schema';
+
+const aboutEntry = await getEntry('pages', 'about');
+
+if (!aboutEntry) {
+  throw new Error('About page content not found.');
+}
+
+const frontmatter = aboutEntry.data as AboutFrontmatter;
+const title = frontmatter.title;
+const description = frontmatter.summary;
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: frontmatter.title }];
+
+const webPageSchema = {
+  '@type': 'WebPage',
+  '@id': Astro.url.href,
+  name: title,
+  description: description,
+  url: Astro.url.href,
+};
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.href);
+
+const schemas = [webPageSchema, breadcrumbSchema];
+
+const { Content } = await aboutEntry.render();
+---
+
+<Base title={title} description={description} schemas={schemas}>
+  <Breadcrumb crumbs={crumbs} />
+
+  <div class="article-content">
+    <Content />
+  </div>
+</Base>

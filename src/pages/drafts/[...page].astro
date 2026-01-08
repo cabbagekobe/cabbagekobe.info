@@ -1,0 +1,62 @@
+---
+import type { MarkdownInstance, Page } from 'astro';
+import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { isArticleVisible } from '@/lib/content/filters';
+import type { Article, Frontmatter } from '@/lib/content/types';
+import { siteConfig } from '@/site.config';
+
+export async function getStaticPaths({ paginate }) {
+  if (import.meta.env.PROD) {
+    return []; // Don't build this page in production
+  }
+
+  const mdxModules = import.meta.glob<MarkdownInstance<Frontmatter>>(
+    '@/content/articles/**/*.mdx',
+  );
+
+  const allMdxArticles = await Promise.all(
+    Object.keys(mdxModules).map(async (filepath) => {
+      const { frontmatter } = await mdxModules[filepath]();
+      const slug = filepath.split('/').at(-2) as string;
+      const permalink = frontmatter.permalink || `/articles/${slug}`; // permalinkを生成
+
+      return {
+        frontmatter,
+        slug,
+        permalink,
+        // Article型に合わせるためのダミー値
+        filepath: '',
+        html: '',
+        markdown: '',
+        raw: '',
+        headings: [],
+      };
+    }),
+  );
+
+  const previewArticles = allMdxArticles
+    .filter(({ frontmatter }) => !isArticleVisible(frontmatter)) // Filter for articles NOT visible publicly
+    .sort(
+      (a, b) =>
+        new Date(b.frontmatter.published_at ?? '1900-01-01').valueOf() -
+        new Date(a.frontmatter.published_at ?? '1900-01-01').valueOf(),
+    );
+
+  return paginate(previewArticles, { pageSize: siteConfig.articlesPerPage });
+}
+
+const { page } = Astro.props;
+const title = `下書き・未来記事一覧 - ${siteConfig.title}`;
+const description = `現在公開されていない記事の一覧です。`;
+const crumbs = [{ label: 'Home', href: '/' }, { label: 'Drafts' }];
+---
+
+<ArticleListLayout
+  title={title}
+  description={description}
+  articles={page.data}
+  crumbs={crumbs}
+  page={page}
+  permalink={Astro.url.pathname}
+  noindex={true}
+/>
