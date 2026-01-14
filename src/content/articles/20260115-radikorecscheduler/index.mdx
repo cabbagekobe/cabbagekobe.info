@@ -1,0 +1,48 @@
+---
+title: '手作業のRadiko録音を卒業するために「radikoRecScheduler」を作った'
+pubDate: 2026-01-15T00:00:00+09:00
+description: '毎週手作業で更新していたRadikoの録音作業を自動化するため、Web UIで簡単に予約できる「radikoRecScheduler」を開発しました。'
+tags: ["Go", "React", "Docker", "Software"]
+---
+
+この度Radiko.jpの番組録音を補助するためのソフトウェア「radikoRecScheduler」を開発し、GitHubで公開しました。
+
+[https://github.com/cabbagekobe/radikoRecScheduler](https://github.com/cabbagekobe/radikoRecScheduler)
+
+**本ソフトウェアは、個人が私的利用の範囲で楽しむことを目的としています。それ以外の目的での利用は意図していません。**
+
+## なぜ作ったか
+
+これまでRadikoの録音には、長年[radigo](https://github.com/yyoshiki41/radigo)というツールを使ってきました。
+
+ただ運用方法はかなり手作業に頼ったもので、具体的には毎週、下のようなコマンドが並んだテキストファイルの日付部分を手で書き換えて改めて実行する。って感じでした。
+
+```
+radigo rec -id=LFR -s=20260107030000
+radigo rec -id=LFR -s=20260108010000
+radigo rec -id=LFR -s=20260109000000
+radigo rec -id=FMT -s=20260109113000
+radigo rec -id=FMT -s=20260110203000
+radigo rec -id=FMJ -s=20260110000000
+radigo rec -id=QRR -s=20260111180000
+radigo rec -id=QRR -s=20260111183000
+radigo rec -id=QRR -s=20260111190000
+radigo rec -id=LFR -s=20260111230000
+```
+
+この「毎週日付を更新する」という作業が地味に面倒で、どうにか楽にしたい、という思いが開発のきっかけです。
+
+## 主な特徴
+
+-   **ファイルを使ったスケジュール設定**:
+    `schedule.json`というファイルで録音スケジュールを管理しており、直接編集することも可能です。
+
+詳細な設定方法や使い方については、リポジトリのREADMEをご覧ください。
+
+## まとめ
+
+`radikoRecScheduler`は、私自身の「毎週のちょっとした面倒」を解決するために作ったソフトウェアです。
+
+Radikoをよく利用される方、特に「たくさんの番組を毎週録音しているけど、管理が少し大変…」と感じている方には、便利に使っていただけるのではないかと思います。
+
+ぜひお試しいただき、バグ報告や機能要望などがありましたら、GitHubのIssueやPull Requestでお知らせいただけると嬉しいです。
