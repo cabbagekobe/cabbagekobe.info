@@ -21,7 +21,7 @@
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/tailwind": "^5.1.0",
-    "@biomejs/biome": "^2.4.4",
+    "@biomejs/biome": "^2.4.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.11.0",
