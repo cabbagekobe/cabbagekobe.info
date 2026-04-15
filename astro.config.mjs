@@ -1,7 +1,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import tailwind from '@astrojs/tailwind';
 import compress from '@playform/compress';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import rehypeSlug from 'rehype-slug';
 
@@ -14,14 +14,16 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
   },
+  vite: {
+    plugins: [tailwindcss()],
+  },
   integrations: [
-    tailwind({ config: { applyBaseStyles: false } }),
     sitemap(),
     compress(),
     mdx({
       rehypePlugins: [rehypeSlug],
       components: {
-        OGPCard: './src/components/articles/OGPCard.astro', // 文字列でパスを指定
+        OGPCard: './src/components/articles/OGPCard.astro',
       },
     }),
   ],

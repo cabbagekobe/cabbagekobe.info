@@ -10,9 +10,9 @@ const ogp = await getOgp(url);
 ---
 {ogp ? (
   <div class="my-6">
-    <a href={ogp.url || url} target="_blank" rel="noopener noreferrer" class="flex h-36 max-w-full overflow-hidden rounded-lg border border-line bg-card-background shadow-sm transition-all duration-300 hover:border-accent/50 hover:shadow-md">
+    <a href={ogp.url || url} target="_blank" rel="noopener noreferrer" class="flex h-36 max-w-full overflow-hidden rounded-lg border border-line bg-card-background shadow-xs transition-all duration-300 hover:border-accent/50 hover:shadow-md">
       {ogp.image && (
-        <div class="w-48 flex-shrink-0">
+        <div class="w-48 shrink-0">
           <img src={ogp.image} alt={ogp.title || ''} class="h-full w-full object-cover object-center" />
         </div>
       )}
