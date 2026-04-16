@@ -1,11 +1,16 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import OGPCard from '@/components/articles/OGPCard.astro';
 import RelatedArticles from '@/components/articles/RelatedArticles.astro';
 import TableOfContents from '@/components/articles/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
-import { type Article, formatDate, isArticleVisible } from '@/lib/content';
+import {
+  type Article,
+  formatDate,
+  getEntrySlug,
+  isArticleVisible,
+} from '@/lib/content';
 import { getRelatedArticles } from '@/lib/content/articles';
 import { createBreadcrumbSchema } from '@/lib/schema';
 import { siteConfig } from '@/site.config';
@@ -14,7 +19,8 @@ export async function getStaticPaths() {
   const allCollectionEntries = await getCollection('articles');
 
   const allArticles: Article[] = allCollectionEntries.map((entry) => {
-    const slug = entry.slug;
+    const id = entry.id;
+    const slug = getEntrySlug(id);
     const permalink = entry.data.permalink || `/articles/${slug}`;
 
     return {
@@ -29,15 +35,17 @@ export async function getStaticPaths() {
     : allArticles;
 
   return articlesToBuild.map((currentArticle) => {
+    const articleSlug = getEntrySlug(currentArticle.id);
     return {
-      params: { slug: currentArticle.slug },
+      params: { slug: articleSlug },
       props: { article: currentArticle },
     };
   });
 }
 
 const { article } = Astro.props;
-const { frontmatter, slug } = article;
+const { frontmatter } = article;
+const slug = getEntrySlug(article.id);
 
 const crumbs = [{ href: '/', label: 'Home' }];
 crumbs.push({ label: frontmatter.title });
@@ -53,7 +61,7 @@ if (frontmatter.cover_image) {
 }
 
 // TOCの取得
-const { Content, headings } = await article.render();
+const { Content, headings } = await render(article);
 
 const { title, summary, meta_title, meta_description } = frontmatter;
 
@@ -62,8 +70,9 @@ if (import.meta.env.PROD && !isArticleVisible(frontmatter)) {
 }
 
 const allArticles = (await getCollection('articles')).map((entry) => {
-  const slug = entry.slug;
-  const permalink = entry.data.permalink || `/articles/${slug}`;
+  const id = entry.id;
+  const articleSlug = getEntrySlug(id);
+  const permalink = entry.data.permalink || `/articles/${articleSlug}`;
   return {
     ...entry,
     frontmatter: entry.data,

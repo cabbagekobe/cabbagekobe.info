@@ -2,6 +2,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
+ * Astro 6のentry.idからslugを抽出します。
+ * - `YYYYMMD-slug/index.mdx` → `YYYYMMD-slug`
+ * - `YYYYMMD-slug/index.md` → `YYYYMMD-slug`
+ * - `YYYYMMD-slug.mdx` → `YYYYMMD-slug`
+ * - `YYYYMMD-slug.md` → `YYYYMMD-slug`
+ * @param id コンテンツエントリのID
+ * @returns slug文字列
+ */
+export function getEntrySlug(id: string): string {
+  if (id.endsWith('/index.mdx')) {
+    return id.replace('/index.mdx', '');
+  }
+  if (id.endsWith('/index.md')) {
+    return id.replace('/index.md', '');
+  }
+  return id.replace(/\.mdx?$/, '');
+}
+
+/**
  * ソースファイルがデスティネーションファイルよりも新しい場合、
  * またはデスティネーションファイルが存在しない場合に、ファイルをコピーします。
  * コピー先のディレクトリが存在しない場合は作成されます。

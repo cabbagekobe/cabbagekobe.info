@@ -70,8 +70,9 @@ npm run check-all     # Full CI check: build + lint + test
 - Import from `vitest`: `import { describe, expect, it, vi } from 'vitest'`
 
 ### Content Collections
-- Articles in `src/content/articles/YYYYMMD-slug/index.mdx`
-- Schema defined in `src/content/config.ts`
+- Articles in `src/content/articles/YYYYMMD-slug/index.{md,mdx}`
+- Schema defined in `src/lib/schema.ts`
+- Supports both `.md` and `.mdx` file extensions
 - Frontmatter: `title`, `published_at` (required), optional fields per schema
 
 ### Styling (Tailwind)
@@ -100,6 +101,14 @@ src/
 - **New article**: `npm run new:article` (interactive prompt)
 - **List routes**: `npm run list:routes`
 - **Screenshots**: `npm run screenshot:pages` (requires Playwright)
+
+## Astro 6 Migration Notes
+
+When working with content collections in Astro 6:
+- Use `getCollection('articles')` instead of deprecated `getEntry()`
+- Use `entry.id` instead of `entry.slug`
+- Use `render(entry)` function instead of `entry.render()` method
+- Use the `getEntrySlug(id)` utility from `@/lib/content/utils` to extract slugs from entry IDs
 
 ## Notes
 
