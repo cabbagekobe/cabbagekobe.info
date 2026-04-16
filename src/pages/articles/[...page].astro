@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import type { Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
-import { isArticleVisible } from '@/lib/content/filters';
+import { getEntrySlug, isArticleVisible } from '@/lib/content';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
@@ -10,7 +10,7 @@ export async function getStaticPaths({ paginate }) {
   const allCollectionEntries = await getCollection('articles');
 
   const allArticles: Article[] = allCollectionEntries.map((entry) => {
-    const slug = entry.slug;
+    const slug = getEntrySlug(entry.id);
 
     const permalink = entry.data.permalink || `/articles/${slug}`;
 

@@ -14,6 +14,9 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
   },
+  legacy: {
+    collectionsBackwardsCompat: true,
+  },
   vite: {
     plugins: [tailwindcss()],
   },

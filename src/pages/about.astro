@@ -1,11 +1,14 @@
 ---
-import { getEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import type { AboutFrontmatter } from '@/lib/content/types';
 import { createBreadcrumbSchema } from '@/lib/schema';
 
-const aboutEntry = await getEntry('pages', 'about');
+const pages = await getCollection('pages');
+const aboutEntry = pages.find(
+  (entry) => entry.id.startsWith('about') && !entry.id.includes('/'),
+);
 
 if (!aboutEntry) {
   throw new Error('About page content not found.');
@@ -28,7 +31,7 @@ const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.href);
 
 const schemas = [webPageSchema, breadcrumbSchema];
 
-const { Content } = await aboutEntry.render();
+const { Content } = await render(aboutEntry);
 ---
 
 <Base title={title} description={description} schemas={schemas}>

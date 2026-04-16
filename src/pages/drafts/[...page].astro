@@ -3,6 +3,7 @@ import type { MarkdownInstance, Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { isArticleVisible } from '@/lib/content/filters';
 import type { Article, Frontmatter } from '@/lib/content/types';
+import { getEntrySlug } from '@/lib/content/utils';
 import { siteConfig } from '@/site.config';
 
 export async function getStaticPaths({ paginate }) {
@@ -17,8 +18,15 @@ export async function getStaticPaths({ paginate }) {
   const allMdxArticles = await Promise.all(
     Object.keys(mdxModules).map(async (filepath) => {
       const { frontmatter } = await mdxModules[filepath]();
-      const slug = filepath.split('/').at(-2) as string;
-      const permalink = frontmatter.permalink || `/articles/${slug}`; // permalinkを生成
+      const parts = filepath.split('/');
+      const filename = parts.at(-1);
+      const dirname = parts.at(-2);
+      const id =
+        filename === 'index.mdx' || filename === 'index.md'
+          ? `${dirname}/${filename}`
+          : filename;
+      const slug = getEntrySlug(id);
+      const permalink = frontmatter.permalink || `/articles/${slug}`;
 
       return {
         frontmatter,

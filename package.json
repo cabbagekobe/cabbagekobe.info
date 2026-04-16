@@ -21,7 +21,7 @@
     "check-all": "astro build && npm run lint && npm run test"
   },
   "devDependencies": {
-    "@astrojs/rss": "^4.0.15",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@biomejs/biome": "^2.4.10",
     "@testing-library/jest-dom": "^6.9.1",
@@ -30,7 +30,7 @@
     "@types/prompts": "^2.4.9",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
-    "astro": "^5.18.1",
+    "astro": "^6.1.7",
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
     "jsdom": "^27.4.0",
