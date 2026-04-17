@@ -16,7 +16,6 @@ vi.mock('fast-glob', () => ({
 vi.mock('gray-matter', () => ({
   default: vi.fn(),
 }));
-vi.mock('../content/taxonomy', () => ({}));
 
 describe('listAllRoutes', () => {
   it('すべてのルートを正しくリストし、ソートして返す', async () => {

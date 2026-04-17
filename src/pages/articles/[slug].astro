@@ -10,6 +10,7 @@ import {
   formatDate,
   getEntrySlug,
   isArticleVisible,
+  transformEntryToArticle,
 } from '@/lib/content';
 import { getRelatedArticles } from '@/lib/content/articles';
 import { createBreadcrumbSchema } from '@/lib/schema';
@@ -18,17 +19,9 @@ import { siteConfig } from '@/site.config';
 export async function getStaticPaths() {
   const allCollectionEntries = await getCollection('articles');
 
-  const allArticles: Article[] = allCollectionEntries.map((entry) => {
-    const id = entry.id;
-    const slug = getEntrySlug(id);
-    const permalink = entry.data.permalink || `/articles/${slug}`;
-
-    return {
-      ...entry,
-      frontmatter: entry.data,
-      permalink: permalink,
-    } as Article;
-  });
+  const allArticles: Article[] = allCollectionEntries.map(
+    transformEntryToArticle,
+  );
 
   const articlesToBuild = import.meta.env.PROD
     ? allArticles.filter(({ frontmatter }) => isArticleVisible(frontmatter))
@@ -69,16 +62,9 @@ if (import.meta.env.PROD && !isArticleVisible(frontmatter)) {
   return Astro.redirect('/404');
 }
 
-const allArticles = (await getCollection('articles')).map((entry) => {
-  const id = entry.id;
-  const articleSlug = getEntrySlug(id);
-  const permalink = entry.data.permalink || `/articles/${articleSlug}`;
-  return {
-    ...entry,
-    frontmatter: entry.data,
-    permalink,
-  } as Article;
-});
+const allArticles = (await getCollection('articles')).map(
+  transformEntryToArticle,
+);
 const related = getRelatedArticles(article, allArticles);
 
 const articleSchema = {

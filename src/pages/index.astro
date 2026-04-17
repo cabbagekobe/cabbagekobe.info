@@ -1,22 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
-import { getEntrySlug, isArticleVisible } from '@/lib/content';
+import {
+  getEntrySlug,
+  isArticleVisible,
+  transformEntryToArticle,
+} from '@/lib/content';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
 const allCollectionEntries = await getCollection('articles');
-
-const allArticles: Article[] = allCollectionEntries.map((entry) => {
-  const slug = getEntrySlug(entry.id);
-  const permalink = entry.data.permalink || `/articles/${slug}`;
-
-  return {
-    ...entry,
-    frontmatter: entry.data,
-    permalink: permalink,
-  } as Article;
-});
+const allArticles: Article[] = allCollectionEntries.map(
+  transformEntryToArticle,
+);
 
 const items = allArticles
   .filter(({ frontmatter }) => isArticleVisible(frontmatter))
