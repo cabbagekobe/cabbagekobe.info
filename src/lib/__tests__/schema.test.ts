@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { HOME_LABEL } from '@/lib/constants';
 import type { SiteConfig } from '../../site.config';
 import { createBreadcrumbSchema, createWebSiteSchema } from '../schema';
 
@@ -34,7 +35,7 @@ describe('createBreadcrumbSchema', () => {
   });
 
   it('有効なcrumbs配列を渡すと、期待通りのBreadcrumbListスキーマを生成する', () => {
-    const crumbs = [{ label: 'Home', href: '/' }, { label: 'Article' }];
+    const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: 'Article' }];
 
     const expectedSchema = {
       '@type': 'BreadcrumbList',
@@ -42,7 +43,7 @@ describe('createBreadcrumbSchema', () => {
         {
           '@type': 'ListItem',
           position: 1,
-          name: 'Home',
+          name: HOME_LABEL,
           item: 'https://test.com/',
         },
         {

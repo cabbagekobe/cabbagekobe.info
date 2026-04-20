@@ -6,7 +6,7 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
 import Pagination from '@/components/Pagination.astro';
 import Base from '@/layouts/Base.astro';
 import type { Article } from '@/lib/content';
-import { createBreadcrumbSchema } from '@/lib/schema';
+import { generateBreadcrumbSchema } from '@/lib/content/schema';
 
 interface Props {
   title?: string;
@@ -26,7 +26,7 @@ const webPageSchema = {
   description: description,
   url: Astro.url.href,
 };
-const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.href);
+const breadcrumbSchema = generateBreadcrumbSchema(crumbs, Astro.url.origin);
 const schemas = [webPageSchema, breadcrumbSchema];
 ---
 <Base title={title} description={description} permalink={permalink} schemas={schemas}>

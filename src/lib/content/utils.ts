@@ -3,6 +3,10 @@ import path from 'node:path';
 
 /**
  * Astro 6のentry.idからslugを抽出します。
+ * - `articles/YYYYMMD-slug/index.mdx` → `YYYYMMD-slug`
+ * - `articles/YYYYMMD-slug/index.md` → `YYYYMMD-slug`
+ * - `articles/YYYYMMD-slug.mdx` → `YYYYMMD-slug`
+ * - `articles/YYYYMMD-slug.md` → `YYYYMMD-slug`
  * - `YYYYMMD-slug/index.mdx` → `YYYYMMD-slug`
  * - `YYYYMMD-slug/index.md` → `YYYYMMD-slug`
  * - `YYYYMMD-slug.mdx` → `YYYYMMD-slug`
@@ -11,6 +15,14 @@ import path from 'node:path';
  * @returns slug文字列
  */
 export function getEntrySlug(id: string): string {
+  // コレクションプレフィックスを削除（例: 'articles/slug' -> 'slug'）
+  if (id.includes('/')) {
+    const parts = id.split('/');
+    // 最初の部分がコレクション名だと仮定して削除
+    parts.shift();
+    id = parts.join('/');
+  }
+
   if (id.endsWith('/index.mdx')) {
     return id.replace('/index.mdx', '');
   }
@@ -63,4 +75,45 @@ export function formatDate(date: string | Date | undefined | null): string {
     console.error(`Invalid date provided to formatDate: ${date}`, e);
     return ''; // 無効な日付の場合は空文字列を返す
   }
+}
+
+/**
+ * カバー画像のパスを解決します。
+ * @param coverImage 記事のフロントマターから取得したカバー画像情報。文字列、または { src: string } オブジェクト、または undefined。
+ * @param articleSlug 記事のスラッグ（画像がローカルファイルの場合に使用）
+ * @returns 解決された画像のパス、またはカバー画像がない場合はundefined
+ */
+export function resolveCoverImagePath(
+  coverImage: string | { src: string } | undefined,
+  articleSlug: string,
+): string | undefined {
+  if (!coverImage) return undefined;
+
+  let src: string;
+  if (typeof coverImage === 'string') {
+    src = coverImage;
+  } else if (
+    typeof coverImage === 'object' &&
+    coverImage !== null &&
+    'src' in coverImage &&
+    typeof coverImage.src === 'string'
+  ) {
+    src = coverImage.src;
+  } else {
+    // 文字列でもオブジェクト（srcプロパティを持つ文字列）でもない場合はundefinedを返す
+    return undefined;
+  }
+
+  // コンテンツ内の画像パスの場合は、パブリックパスに変換
+  if (src.startsWith('/src/content/articles/')) {
+    return src.replace('/src/content', '');
+  }
+
+  // 相対パスの場合は、記事の画像ディレクトリを基準に変換
+  if (src.startsWith('./')) {
+    return `/images/articles/${articleSlug}/${src.replace('./', '')}`;
+  }
+
+  // それ以外はそのまま返す（絶対パスや外部URLなど）
+  return src;
 }
