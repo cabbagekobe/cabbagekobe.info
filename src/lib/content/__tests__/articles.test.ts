@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import { HOME_LABEL } from '@/lib/constants';
 import { getArticlePageProps } from '../articles';
 import type { Article } from '../types';
 
@@ -92,9 +93,10 @@ describe('getArticlePageProps', () => {
     expect(props.article).toEqual(article);
     expect(props.coverSrc).toBe('/images/articles/main-article/cover.jpg'); // 相対パスの解決
     expect(props.crumbs).toEqual([
-      { href: '/', label: 'Home' },
+      { href: '/', label: HOME_LABEL },
       { label: 'Test Article main-article' },
     ]);
-    expect(props.related).toEqual([]); // モックされた関連記事が返されることを確認
+    // モックされた関連記事が返されることを確認
+    expect(props.related).toEqual(mockAllArticles);
   });
 });

@@ -1,6 +1,7 @@
 ---
 import type { MarkdownInstance, Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { HOME_LABEL } from '@/lib/constants';
 import { isArticleVisible } from '@/lib/content/filters';
 import type { Article, Frontmatter } from '@/lib/content/types';
 import { getEntrySlug } from '@/lib/content/utils';
@@ -56,7 +57,7 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props;
 const title = `下書き・未来記事一覧 - ${siteConfig.title}`;
 const description = `現在公開されていない記事の一覧です。`;
-const crumbs = [{ label: 'Home', href: '/' }, { label: 'Drafts' }];
+const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: 'Drafts' }];
 ---
 
 <ArticleListLayout

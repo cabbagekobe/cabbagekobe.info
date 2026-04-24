@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import type { Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { HOME_LABEL } from '@/lib/constants';
 import {
   getEntrySlug,
   isArticleVisible,
@@ -30,7 +31,7 @@ export async function getStaticPaths({ paginate }) {
 
 const { page } = Astro.props;
 const title = `記事一覧 - ${siteConfig.title}`;
-const crumbs = [{ label: 'Home', href: '/' }, { label: '記事一覧' }];
+const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: '記事一覧' }];
 ---
 <ArticleListLayout
   title={title}

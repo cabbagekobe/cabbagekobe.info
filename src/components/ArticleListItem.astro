@@ -1,6 +1,6 @@
 ---
 import type { Article } from '@/lib/content';
-import { formatDate } from '@/lib/content';
+import { formatDate, resolveCoverImagePath } from '@/lib/content';
 
 export interface Props {
   article: Article;
@@ -8,13 +8,9 @@ export interface Props {
 
 const { article } = Astro.props;
 const fm = article.data;
-let cover: string | undefined;
-if (fm.cover_image) {
-  const src = fm.cover_image.src;
-  cover = src.startsWith('/src/content/articles/')
-    ? src.replace('/src/content', '')
-    : src;
-}
+const cover = fm.cover_image
+  ? resolveCoverImagePath(fm.cover_image.src, article.id)
+  : undefined;
 const dateText = fm.published_at ? formatDate(fm.published_at) : '';
 ---
 <article class="flex flex-row overflow-hidden transition-all duration-300 ease-in-out">

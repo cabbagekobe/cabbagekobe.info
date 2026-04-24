@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
+import { HOME_LABEL } from '@/lib/constants';
 import {
   getEntrySlug,
   isArticleVisible,
@@ -21,10 +22,10 @@ const items = allArticles
       b.frontmatter.published_at.valueOf() -
       a.frontmatter.published_at.valueOf(),
   )
-  .slice(0, 100);
-const title = `${siteConfig.title}`;
+  .slice(0, siteConfig.articlesPerPage);
+const title = siteConfig.title;
 
-const crumbs = [{ label: 'Home' }];
+const crumbs = [{ label: HOME_LABEL }];
 ---
 <ArticleListLayout
   title={title}
