@@ -3,33 +3,26 @@ import path from 'node:path';
 
 /**
  * Astro 6のentry.idからslugを抽出します。
- * - `articles/YYYYMMD-slug/index.mdx` → `YYYYMMD-slug`
- * - `articles/YYYYMMD-slug/index.md` → `YYYYMMD-slug`
- * - `articles/YYYYMMD-slug.mdx` → `YYYYMMD-slug`
- * - `articles/YYYYMMD-slug.md` → `YYYYMMD-slug`
- * - `YYYYMMD-slug/index.mdx` → `YYYYMMD-slug`
- * - `YYYYMMD-slug/index.md` → `YYYYMMD-slug`
- * - `YYYYMMD-slug.mdx` → `YYYYMMD-slug`
- * - `YYYYMMD-slug.md` → `YYYYMMD-slug`
+ * Astro 6 では entry.id にコレクション名は含まれません。
+ * - `YYYYMMDD-slug/index.mdx` → `YYYYMMDD-slug`
+ * - `YYYYMMDD-slug/index.md` → `YYYYMMDD-slug`
+ * - `YYYYMMDD-slug.mdx` → `YYYYMMDD-slug`
+ * - `YYYYMMDD-slug.md` → `YYYYMMDD-slug`
  * @param id コンテンツエントリのID
  * @returns slug文字列
  */
 export function getEntrySlug(id: string): string {
-  // コレクションプレフィックスを削除（例: 'articles/slug' -> 'slug'）
-  if (id.includes('/')) {
-    const parts = id.split('/');
-    // 最初の部分がコレクション名だと仮定して削除
-    parts.shift();
-    id = parts.join('/');
+  // index.mdx / index.md 形式: ディレクトリ名がslug
+  if (id.endsWith('/index.mdx') || id.endsWith('/index.md')) {
+    const dir = id.replace(/\/index\.mdx?$/, '');
+    // ディレクトリ名の最後のセグメントを返す
+    const lastSegment = dir.split('/').pop();
+    return lastSegment || dir;
   }
 
-  if (id.endsWith('/index.mdx')) {
-    return id.replace('/index.mdx', '');
-  }
-  if (id.endsWith('/index.md')) {
-    return id.replace('/index.md', '');
-  }
-  return id.replace(/\.mdx?$/, '');
+  // フラットファイル形式: 拡張子を除いたファイル名がslug
+  const basename = id.split('/').pop() || id;
+  return basename.replace(/\.mdx?$/, '');
 }
 
 /**
