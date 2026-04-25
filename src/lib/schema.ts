@@ -1,13 +1,16 @@
 import type { Crumb } from '@/components/Breadcrumb.astro';
+import type { Article } from '@/lib/content/types';
+import { getEntrySlug, resolveCoverImagePath } from '@/lib/content/utils';
 import type { SiteConfig } from '@/site.config';
+import { siteConfig } from '@/site.config';
 
-export const createWebSiteSchema = (siteConfig: SiteConfig) => {
+export const createWebSiteSchema = (config: SiteConfig) => {
   return {
     '@type': 'WebSite',
-    '@id': `${siteConfig.siteUrl}/#website`,
-    name: siteConfig.title,
-    url: siteConfig.siteUrl,
-    description: siteConfig.description,
+    '@id': `${config.siteUrl}/#website`,
+    name: config.title,
+    url: config.siteUrl,
+    description: config.description,
   };
 };
 
@@ -23,5 +26,41 @@ export const createBreadcrumbSchema = (crumbs: Crumb[], siteUrl: string) => {
       name: crumb.label,
       item: crumb.href ? new URL(crumb.href, siteUrl).href : undefined,
     })),
+  };
+};
+
+/**
+ * Articleスキーマを生成
+ * @param article 記事データ
+ * @param siteUrl サイトURL
+ * @returns Articleスキーマオブジェクト
+ */
+export const createArticleSchema = (article: Article, siteUrl: string) => {
+  const { title, summary, cover_image, published_at, updated_at } =
+    article.data;
+  const coverSrc = cover_image
+    ? resolveCoverImagePath(cover_image, getEntrySlug(article.id))
+    : undefined;
+
+  return {
+    '@type': 'Article',
+    '@id': `${siteUrl}/articles/${getEntrySlug(article.id)}/`,
+    headline: title,
+    description: summary,
+    image: coverSrc,
+    datePublished: published_at.toISOString(),
+    dateModified: (updated_at ?? published_at).toISOString(),
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.title,
+      logo: {
+        '@type': 'ImageObject',
+        url: new URL('/favicon.ico', siteUrl).href,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/articles/${getEntrySlug(article.id)}/`,
+    },
   };
 };

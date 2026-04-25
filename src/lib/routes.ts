@@ -3,6 +3,13 @@ import path from 'node:path';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
 
+interface Frontmatter {
+  title?: string;
+  permalink?: string;
+  draft?: boolean;
+  published_at?: Date;
+}
+
 interface MdxArticleData {
   frontmatter: Frontmatter;
   slug: string;

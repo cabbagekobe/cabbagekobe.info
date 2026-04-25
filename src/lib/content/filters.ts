@@ -8,7 +8,7 @@ import type { Article } from './types';
  * @returns 記事が可視である場合はtrue、そうでない場合はfalse。
  */
 export function isArticleVisible(
-  frontmatter: Article['frontmatter'],
+  frontmatter: Article['data'],
   isPreview: boolean = false,
 ): boolean {
   // プレビューモードの場合は常に表示可能

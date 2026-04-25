@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { Crumb } from '@/components/Breadcrumb.astro';
-import { generateArticleSchema, generateBreadcrumbSchema } from '../schema';
+import { createArticleSchema, createBreadcrumbSchema } from '@/lib/schema';
 import type { Article } from '../types';
 
 // Helper to create a mock Article
@@ -32,7 +32,7 @@ const createMockArticle = (overrides: Partial<Article> = {}): Article => {
   return { ...defaultArticle, ...overrides };
 };
 
-describe('generateArticleSchema', () => {
+describe('createArticleSchema', () => {
   const siteUrl = 'https://test.com';
 
   it('should generate correct schema for article without cover image', () => {
@@ -46,7 +46,7 @@ describe('generateArticleSchema', () => {
       },
     });
 
-    const schema = generateArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl);
 
     expect(schema).toEqual({
       '@type': 'Article',
@@ -58,7 +58,7 @@ describe('generateArticleSchema', () => {
       dateModified: '2024-01-02T00:00:00.000Z',
       publisher: {
         '@type': 'Organization',
-        name: 'cabbagekobe.info', // This comes from siteConfig.title
+        name: 'cabbagekobe.info',
         logo: {
           '@type': 'ImageObject',
           url: `${siteUrl}/favicon.ico`,
@@ -82,7 +82,7 @@ describe('generateArticleSchema', () => {
       },
     });
 
-    const schema = generateArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl);
 
     expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
   });
@@ -100,7 +100,7 @@ describe('generateArticleSchema', () => {
       },
     });
 
-    const schema = generateArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl);
 
     expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
   });
@@ -116,7 +116,7 @@ describe('generateArticleSchema', () => {
       },
     });
 
-    const schema = generateArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl);
 
     expect(schema.image).toBe(
       `/images/articles/20240101-test-article/image.jpg`,
@@ -124,11 +124,11 @@ describe('generateArticleSchema', () => {
   });
 });
 
-describe('generateBreadcrumbSchema', () => {
+describe('createBreadcrumbSchema', () => {
   const siteUrl = 'https://test.com';
 
   it('should return null for empty crumbs', () => {
-    const schema = generateBreadcrumbSchema([], siteUrl);
+    const schema = createBreadcrumbSchema([], siteUrl);
     expect(schema).toBeNull();
   });
 
@@ -139,7 +139,7 @@ describe('generateBreadcrumbSchema', () => {
       { label: 'Test Article' },
     ];
 
-    const schema = generateBreadcrumbSchema(crumbs, siteUrl);
+    const schema = createBreadcrumbSchema(crumbs, siteUrl);
 
     expect(schema).toEqual({
       '@type': 'BreadcrumbList',

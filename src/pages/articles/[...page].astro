@@ -1,31 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
 import type { Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import {
-  getEntrySlug,
-  isArticleVisible,
-  transformEntryToArticle,
-} from '@/lib/content';
+import { getAllPublishedArticles } from '@/lib/content/articles';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
 export async function getStaticPaths({ paginate }) {
-  const allCollectionEntries = await getCollection('articles');
-
-  const allArticles: Article[] = allCollectionEntries.map(
-    transformEntryToArticle,
-  );
-
-  const publishedArticles = allArticles
-    .filter(({ frontmatter }) => isArticleVisible(frontmatter))
-    .sort(
-      (a, b) =>
-        b.frontmatter.published_at.valueOf() -
-        a.frontmatter.published_at.valueOf(),
-    );
-
+  const publishedArticles = await getAllPublishedArticles();
   return paginate(publishedArticles, { pageSize: siteConfig.articlesPerPage });
 }
 

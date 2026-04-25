@@ -1,51 +1,43 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import OGPCard from '@/components/articles/OGPCard.astro';
 import RelatedArticles from '@/components/articles/RelatedArticles.astro';
 import TableOfContents from '@/components/articles/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import { HOME_LABEL } from '@/lib/constants';
+import { getAllArticles, getRelatedArticles } from '@/lib/content/articles';
+import { isArticleVisible } from '@/lib/content/filters';
+import type { Article } from '@/lib/content/types';
 import {
-  type Article,
   formatDate,
   getEntrySlug,
-  isArticleVisible,
   resolveCoverImagePath,
-  transformEntryToArticle,
-} from '@/lib/content';
-import { getRelatedArticles } from '@/lib/content/articles';
-import {
-  generateArticleSchema,
-  generateBreadcrumbSchema,
-} from '@/lib/content/schema';
+} from '@/lib/content/utils';
+import { createArticleSchema, createBreadcrumbSchema } from '@/lib/schema';
 import { siteConfig } from '@/site.config';
 
 export async function getStaticPaths() {
-  const allCollectionEntries = await getCollection('articles');
-
-  const allArticles: Article[] = allCollectionEntries.map(
-    transformEntryToArticle,
-  );
+  const allArticles = await getAllArticles();
 
   const articlesToBuild = import.meta.env.PROD
-    ? allArticles.filter(({ frontmatter }) => isArticleVisible(frontmatter))
+    ? allArticles.filter(({ data }) => isArticleVisible(data))
     : allArticles;
 
   return articlesToBuild.map((currentArticle) => {
     const articleSlug = getEntrySlug(currentArticle.id);
     return {
       params: { slug: articleSlug },
-      props: { article: currentArticle },
+      props: { article: currentArticle, allArticles: articlesToBuild },
     };
   });
 }
 
-const { article } = Astro.props;
-const { frontmatter } = article;
+const { article, allArticles } = Astro.props;
+const { data } = article;
 const slug = getEntrySlug(article.id);
 
-// Safely extract frontmatter properties with defaults
+// Safely extract data properties with defaults
 const {
   title = 'Untitled',
   summary = '',
@@ -56,7 +48,7 @@ const {
   cover_image,
   cover_caption,
   show_toc = false,
-} = frontmatter;
+} = data;
 
 const crumbs = [{ href: '/', label: HOME_LABEL }];
 crumbs.push({ label: title });
@@ -67,20 +59,14 @@ const coverSrc = resolveCoverImagePath(cover_image, slug);
 // TOCの取得
 const { Content, headings } = await render(article);
 
-if (import.meta.env.PROD && !isArticleVisible(frontmatter)) {
+if (import.meta.env.PROD && !isArticleVisible(data)) {
   return Astro.redirect('/404');
 }
 
-const allArticles = (await getCollection('articles')).map(
-  transformEntryToArticle,
-);
-const articlesToBuild = import.meta.env.PROD
-  ? allArticles.filter(({ frontmatter }) => isArticleVisible(frontmatter))
-  : allArticles;
-const related = getRelatedArticles(article, articlesToBuild);
+const related = getRelatedArticles(article, allArticles);
 
-const articleSchema = generateArticleSchema(article, Astro.url.origin);
-const breadcrumbSchema = generateBreadcrumbSchema(crumbs, Astro.url.origin);
+const articleSchema = createArticleSchema(article, Astro.url.origin);
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
 const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
 ---
 
@@ -91,9 +77,9 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
   og={{
     type: 'article',
     image: coverSrc,
-    publishedTime: frontmatter.published_at.toISOString(),
+    publishedTime: data.published_at.toISOString(),
     modifiedTime: (
-      frontmatter.updated_at ?? frontmatter.published_at
+      data.updated_at ?? data.published_at
     ).toISOString(),
   }}
   schemas={schemas}
@@ -113,9 +99,9 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
               loading="lazy"
               class="w-full h-auto rounded-lg"
             />
-            {frontmatter.cover_caption && (
+            {data.cover_caption && (
               <figcaption class="mt-2 text-scale-0 text-center text-text-body/80">
-                {frontmatter.cover_caption}
+                {data.cover_caption}
               </figcaption>
             )}
           </figure>
@@ -124,9 +110,9 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
 
       <div class="article-meta flex items-center text-scale--1 text-text-body/70">
         {
-          frontmatter.published_at && (
-            <time datetime={frontmatter.published_at.toISOString()} class="mr-3">
-              {formatDate(frontmatter.published_at)}
+          data.published_at && (
+            <time datetime={data.published_at.toISOString()} class="mr-3">
+              {formatDate(data.published_at)}
             </time>
           )
         }
@@ -134,7 +120,7 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
       {summary && <p class="text-scale--1 text-text-body/90 my-6">{summary}</p>}
 
       {/* TOCを記事コンテンツの直前に配置 */}
-      {headings && headings.length > 0 && frontmatter.show_toc === true && (
+      {headings && headings.length > 0 && data.show_toc === true && (
         <TableOfContents headings={headings} />
       )}
     </div>

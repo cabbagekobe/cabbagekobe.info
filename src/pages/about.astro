@@ -3,7 +3,6 @@ import { getCollection, render } from 'astro:content';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import type { AboutFrontmatter } from '@/lib/content/types';
 import { createBreadcrumbSchema } from '@/lib/schema';
 
 const pages = await getCollection('pages');
@@ -15,11 +14,11 @@ if (!aboutEntry) {
   throw new Error('About page content not found.');
 }
 
-const frontmatter = aboutEntry.data as AboutFrontmatter;
-const title = frontmatter.title;
-const description = frontmatter.summary;
+const { data } = aboutEntry;
+const title = data.title;
+const description = data.summary;
 
-const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: frontmatter.title }];
+const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: data.title }];
 
 const webPageSchema = {
   '@type': 'WebPage',

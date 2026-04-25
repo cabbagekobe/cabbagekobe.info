@@ -1,6 +1,6 @@
 ---
-import { formatDate } from '@/lib/content';
 import type { Article } from '@/lib/content/types';
+import { formatDate } from '@/lib/content/utils';
 
 interface Props {
   related: Article[];
@@ -16,11 +16,11 @@ const { related } = Astro.props;
       <ul class="list-none p-0 space-y-4">
         {related.map((r) => (
           <li>
-            <a href={r.permalink} class="text-scale-0 hover:underline text-text-body">{r.frontmatter.title}</a>
-            {r.frontmatter.published_at && (
+            <a href={r.permalink} class="text-scale-0 hover:underline text-text-body">{r.data.title}</a>
+            {r.data.published_at && (
               <small class="text-text-body/70 text-scale--1">
                 {' — '}
-                {formatDate(r.frontmatter.published_at)}
+                {formatDate(r.data.published_at)}
               </small>
             )}
           </li>
