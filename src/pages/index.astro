@@ -1,28 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import {
-  getEntrySlug,
-  isArticleVisible,
-  transformEntryToArticle,
-} from '@/lib/content';
-import type { Article } from '@/lib/content/types';
+import { getAllPublishedArticles } from '@/lib/content/articles';
 import { siteConfig } from '@/site.config';
 
-const allCollectionEntries = await getCollection('articles');
-const allArticles: Article[] = allCollectionEntries.map(
-  transformEntryToArticle,
-);
-
-const items = allArticles
-  .filter(({ frontmatter }) => isArticleVisible(frontmatter))
-  .sort(
-    (a, b) =>
-      b.frontmatter.published_at.valueOf() -
-      a.frontmatter.published_at.valueOf(),
-  )
-  .slice(0, siteConfig.articlesPerPage);
+const allArticles = await getAllPublishedArticles();
+const items = allArticles.slice(0, siteConfig.articlesPerPage);
 const title = siteConfig.title;
 
 const crumbs = [{ label: HOME_LABEL }];

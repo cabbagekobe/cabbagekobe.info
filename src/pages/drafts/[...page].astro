@@ -1,54 +1,23 @@
 ---
-import type { MarkdownInstance, Page } from 'astro';
+import type { Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
+import { getAllArticles } from '@/lib/content/articles';
 import { isArticleVisible } from '@/lib/content/filters';
-import type { Article, Frontmatter } from '@/lib/content/types';
-import { getEntrySlug } from '@/lib/content/utils';
+import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
 export async function getStaticPaths({ paginate }) {
   if (import.meta.env.PROD) {
-    return []; // Don't build this page in production
+    return [];
   }
 
-  const mdxModules = import.meta.glob<MarkdownInstance<Frontmatter>>(
-    '@/content/articles/**/*.mdx',
-  );
+  const allArticles = await getAllArticles();
 
-  const allMdxArticles = await Promise.all(
-    Object.keys(mdxModules).map(async (filepath) => {
-      const { frontmatter } = await mdxModules[filepath]();
-      const parts = filepath.split('/');
-      const filename = parts.at(-1);
-      const dirname = parts.at(-2);
-      const id =
-        filename === 'index.mdx' || filename === 'index.md'
-          ? `${dirname}/${filename}`
-          : filename;
-      const slug = getEntrySlug(id);
-      const permalink = frontmatter.permalink || `/articles/${slug}`;
-
-      return {
-        frontmatter,
-        slug,
-        permalink,
-        // Article型に合わせるためのダミー値
-        filepath: '',
-        html: '',
-        markdown: '',
-        raw: '',
-        headings: [],
-      };
-    }),
-  );
-
-  const previewArticles = allMdxArticles
-    .filter(({ frontmatter }) => !isArticleVisible(frontmatter)) // Filter for articles NOT visible publicly
+  const previewArticles = allArticles
+    .filter((a) => !isArticleVisible(a.data))
     .sort(
-      (a, b) =>
-        new Date(b.frontmatter.published_at ?? '1900-01-01').valueOf() -
-        new Date(a.frontmatter.published_at ?? '1900-01-01').valueOf(),
+      (a, b) => b.data.published_at.valueOf() - a.data.published_at.valueOf(),
     );
 
   return paginate(previewArticles, { pageSize: siteConfig.articlesPerPage });

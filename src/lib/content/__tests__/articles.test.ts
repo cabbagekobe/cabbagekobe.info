@@ -1,17 +1,12 @@
-import { vi } from 'vitest';
-import { HOME_LABEL } from '@/lib/constants';
-import { getArticlePageProps } from '../articles';
 import type { Article } from '../types';
 
 // Article 型のモックデータを作成するヘルパー関数
 const createArticleMock = (
   slug: string,
   published_at: string,
-  _permalink: string, // unused parameter
-  cover_image: string | null = null,
-  isDraft: boolean = false,
+  permalink: string,
 ): Article => ({
-  id: `articles/${slug}`,
+  id: `${slug}/index.mdx`,
   slug: slug,
   collection: 'articles',
   body: '## Test Content',
@@ -20,14 +15,14 @@ const createArticleMock = (
     headings: [],
   }),
   filepath: `src/content/articles/${slug}/index.mdx`,
-  permalink: _permalink, // _permalink を使用
+  permalink,
   data: {
     title: `Test Article ${slug}`,
     published_at: new Date(published_at),
     updated_at: new Date(published_at),
     summary: `Summary of Test Article ${slug}`,
-    draft: isDraft,
-    cover_image: cover_image,
+    draft: false,
+    cover_image: null,
   },
   html: '<div>Test Content</div>',
   markdown: '## Test Content',
@@ -36,67 +31,36 @@ const createArticleMock = (
   headings: [],
 });
 
-describe('getArticlePageProps', () => {
-  const mockAllArticles = [
-    createArticleMock('related-b', '2024-01-02', '/b'),
-    createArticleMock('related-a', '2024-01-01', '/a'),
+describe('getRelatedArticles', async () => {
+  const { getRelatedArticles } = await import('../articles');
+
+  const articles = [
+    createArticleMock('a', '2024-01-01', '/a'),
+    createArticleMock('b', '2024-01-05', '/b'),
+    createArticleMock('c', '2024-01-10', '/c'),
+    createArticleMock('d', '2024-01-20', '/d'),
   ];
 
-  beforeEach(async () => {
-    // 各テストの前にモックをリセット（spyOnされている場合など）
-    vi.clearAllMocks();
-    // getRelatedArticles をモック化
-    // ここでは単純に関連記事を返すようにする
-    // 元の getRelatedArticles のテストは上部で完了しているので、ここではその挙動に依存しない
-    vi.spyOn(await import('../articles'), 'getRelatedArticles').mockReturnValue(
-      mockAllArticles,
-    );
-  });
+  test('should return articles sorted by date proximity', () => {
+    const target = articles[1]; // b: 2024-01-05
+    const related = getRelatedArticles(target, articles, 3);
 
-  test('should handle absolute cover image path', async () => {
-    const article = createArticleMock(
-      'another-article',
-      '2024-03-01',
-      '/articles/another-article',
-      'https://example.com/some-image.png', // 絶対パスのカバー画像
-      [],
-    );
-
-    const props = await getArticlePageProps(article, []); // allArticles は関連しないので空で良い
-
-    expect(props.coverSrc).toBe('https://example.com/some-image.png');
-  });
-
-  test('should handle no cover image', async () => {
-    const article = createArticleMock(
-      'no-cover',
-      '2024-02-01',
-      '/articles/no-cover',
-      null, // カバー画像なし
-    );
-
-    const props = await getArticlePageProps(article, []);
-
-    expect(props.coverSrc).toBeUndefined();
-  });
-
-  test('should generate props correctly', async () => {
-    const article = createArticleMock(
-      'main-article',
-      '2024-03-15',
-      '/articles/main-article',
-      './cover.jpg', // 相対パスのカバー画像
-    );
-
-    const props = await getArticlePageProps(article, mockAllArticles);
-
-    expect(props.article).toEqual(article);
-    expect(props.coverSrc).toBe('/images/articles/main-article/cover.jpg'); // 相対パスの解決
-    expect(props.crumbs).toEqual([
-      { href: '/', label: HOME_LABEL },
-      { label: 'Test Article main-article' },
+    expect(related.map((a) => a.id)).toEqual([
+      'a/index.mdx', // 4 days away
+      'c/index.mdx', // 5 days away
+      'd/index.mdx', // 15 days away
     ]);
-    // モックされた関連記事が返されることを確認
-    expect(props.related).toEqual(mockAllArticles);
+  });
+
+  test('should exclude the target article', () => {
+    const target = articles[0];
+    const related = getRelatedArticles(target, articles);
+    expect(related.find((a) => a.id === target.id)).toBeUndefined();
+  });
+
+  test('should respect max parameter', () => {
+    const target = articles[0];
+    const related = getRelatedArticles(target, articles, 2);
+    expect(related).toHaveLength(2);
   });
 });

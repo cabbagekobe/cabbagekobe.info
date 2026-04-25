@@ -11,5 +11,5 @@ import { getEntrySlug } from './utils';
 export function transformEntryToArticle(entry: Entry<'articles'>): Article {
   const slug = getEntrySlug(entry.id);
   const permalink = entry.data.permalink || `/articles/${slug}`;
-  return { ...entry, frontmatter: entry.data, permalink } as Article;
+  return { ...entry, permalink };
 }
