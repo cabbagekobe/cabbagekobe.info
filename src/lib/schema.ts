@@ -2,7 +2,6 @@ import type { Crumb } from '@/components/Breadcrumb.astro';
 import type { Article } from '@/lib/content/types';
 import { getEntrySlug, resolveCoverImagePath } from '@/lib/content/utils';
 import type { SiteConfig } from '@/site.config';
-import { siteConfig } from '@/site.config';
 
 export const createWebSiteSchema = (config: SiteConfig) => {
   return {
@@ -35,7 +34,11 @@ export const createBreadcrumbSchema = (crumbs: Crumb[], siteUrl: string) => {
  * @param siteUrl サイトURL
  * @returns Articleスキーマオブジェクト
  */
-export const createArticleSchema = (article: Article, siteUrl: string) => {
+export const createArticleSchema = (
+  article: Article,
+  siteUrl: string,
+  config: SiteConfig,
+) => {
   const { title, summary, cover_image, published_at, updated_at } =
     article.data;
   const coverSrc = cover_image
@@ -52,7 +55,7 @@ export const createArticleSchema = (article: Article, siteUrl: string) => {
     dateModified: (updated_at ?? published_at).toISOString(),
     publisher: {
       '@type': 'Organization',
-      name: siteConfig.title,
+      name: config.title,
       logo: {
         '@type': 'ImageObject',
         url: new URL('/favicon.ico', siteUrl).href,

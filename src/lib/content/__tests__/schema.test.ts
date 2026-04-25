@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Crumb } from '@/components/Breadcrumb.astro';
 import { createArticleSchema, createBreadcrumbSchema } from '@/lib/schema';
+import { siteConfig } from '@/site.config';
 import type { Article } from '../types';
 
 // Helper to create a mock Article
 const createMockArticle = (overrides: Partial<Article> = {}): Article => {
   const defaultArticle: Article = {
-    id: 'articles/20240101-test-article',
+    id: '20240101-test-article/index.mdx',
     slug: '20240101-test-article',
     collection: 'articles',
     body: '## Test',
@@ -46,7 +47,7 @@ describe('createArticleSchema', () => {
       },
     });
 
-    const schema = createArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl, siteConfig);
 
     expect(schema).toEqual({
       '@type': 'Article',
@@ -82,7 +83,7 @@ describe('createArticleSchema', () => {
       },
     });
 
-    const schema = createArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl, siteConfig);
 
     expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
   });
@@ -100,7 +101,7 @@ describe('createArticleSchema', () => {
       },
     });
 
-    const schema = createArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl, siteConfig);
 
     expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
   });
@@ -116,7 +117,7 @@ describe('createArticleSchema', () => {
       },
     });
 
-    const schema = createArticleSchema(article, siteUrl);
+    const schema = createArticleSchema(article, siteUrl, siteConfig);
 
     expect(schema.image).toBe(
       `/images/articles/20240101-test-article/image.jpg`,

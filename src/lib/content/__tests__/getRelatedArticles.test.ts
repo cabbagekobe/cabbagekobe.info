@@ -9,7 +9,7 @@ const createArticleMock = (
   cover_image: string | null = null,
   isDraft: boolean = false,
 ): Article => ({
-  id: `articles/${slug}`,
+  id: `${slug}/index.mdx`,
   slug: slug,
   collection: 'articles',
   body: '## Test Content',
@@ -61,10 +61,10 @@ describe('getRelatedArticles', () => {
     // much-newer-article (~12 months diff), much-older-article (~12.5 months diff)
     // Note: older-article (2024-01-01) is actually slightly closer to target (2024-06-15)
     // than newer-article (2024-12-01) by about 3 days
-    expect(result[0].id).toBe('articles/older-article');
-    expect(result[1].id).toBe('articles/newer-article');
-    expect(result[2].id).toBe('articles/much-newer-article');
-    expect(result[3].id).toBe('articles/much-older-article');
+    expect(result[0].id).toBe('older-article/index.mdx');
+    expect(result[1].id).toBe('newer-article/index.mdx');
+    expect(result[2].id).toBe('much-newer-article/index.mdx');
+    expect(result[3].id).toBe('much-older-article/index.mdx');
   });
 
   test('should respect max limit', () => {
@@ -76,8 +76,8 @@ describe('getRelatedArticles', () => {
     // Should be the two closest by date
     // Note: older-article (2024-01-01) is actually slightly closer to target (2024-06-15)
     // than newer-article (2024-12-01) by about 3 days
-    expect(result[0].id).toBe('articles/older-article');
-    expect(result[1].id).toBe('articles/newer-article');
+    expect(result[0].id).toBe('older-article/index.mdx');
+    expect(result[1].id).toBe('newer-article/index.mdx');
   });
 
   test('should handle empty input', () => {

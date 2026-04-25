@@ -33,6 +33,11 @@ export async function getStaticPaths() {
   });
 }
 
+interface Props {
+  article: Article;
+  allArticles: Article[];
+}
+
 const { article, allArticles } = Astro.props;
 const { data } = article;
 const slug = getEntrySlug(article.id);
@@ -65,7 +70,11 @@ if (import.meta.env.PROD && !isArticleVisible(data)) {
 
 const related = getRelatedArticles(article, allArticles);
 
-const articleSchema = createArticleSchema(article, Astro.url.origin);
+const articleSchema = createArticleSchema(
+  article,
+  Astro.url.origin,
+  siteConfig,
+);
 const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
 const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
 ---
