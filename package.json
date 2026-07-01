@@ -46,7 +46,6 @@
     "@astrojs/mdx": "^7.0.0",
     "@playform/compress": "^0.2.0",
     "@tailwindcss/vite": "^4.2.2",
-    "open-graph-scraper": "^6.11.0",
-    "rehype-slug": "^6.0.0"
+    "open-graph-scraper": "^6.11.0"
   }
 }

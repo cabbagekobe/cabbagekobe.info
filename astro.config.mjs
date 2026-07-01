@@ -3,7 +3,6 @@ import sitemap from '@astrojs/sitemap';
 import compress from '@playform/compress';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
-import rehypeSlug from 'rehype-slug';
 
 export default defineConfig({
   alias: { '@': './src' },
@@ -24,7 +23,6 @@ export default defineConfig({
     sitemap(),
     compress(),
     mdx({
-      rehypePlugins: [rehypeSlug],
       components: {
         OGPCard: './src/components/articles/OGPCard.astro',
       },
