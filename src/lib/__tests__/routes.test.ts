@@ -28,10 +28,12 @@ describe('listAllRoutes', () => {
           'src/pages/contact/index.astro',
         ]);
       }
-      if (pattern === 'src/content/articles/**/*.mdx') {
+      if (pattern === 'src/content/articles/**/*.{md,mdx}') {
         return Promise.resolve([
           'src/content/articles/20251220-test/index.mdx',
           'src/content/articles/20300101-favoright-test/index.mdx',
+          // permalink 未指定の .md 記事（既定 permalink 生成と .md 取りこぼし防止を検証）
+          'src/content/articles/20230208-cool/index.md',
         ]);
       }
       return Promise.resolve([]);
@@ -52,6 +54,12 @@ title: Favolight Test Article
 permalink: /articles/favoright-test-article/
 ---
 Content for favoright test article.`;
+      }
+      if (filepath.includes('20230208-cool')) {
+        return `---
+title: Cool Article
+---
+Content for cool article.`;
       }
       return '';
     });
@@ -86,6 +94,7 @@ Content for favoright test article.`;
       '/',
       '/about/',
       '/articles/',
+      '/articles/20230208-cool', // permalink 未指定 → slug から既定生成
       '/articles/favoright-test-article/',
       '/articles/test-article/',
       '/contact/',

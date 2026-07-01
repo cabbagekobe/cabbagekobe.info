@@ -63,4 +63,16 @@ describe('getRelatedArticles', async () => {
     const related = getRelatedArticles(target, articles, 2);
     expect(related).toHaveLength(2);
   });
+
+  test('should handle empty input', () => {
+    const target = articles[0];
+    const related = getRelatedArticles(target, [], 5);
+    expect(related).toHaveLength(0);
+  });
+
+  test('should handle single article (only target)', () => {
+    const target = articles[0];
+    const related = getRelatedArticles(target, [target], 5);
+    expect(related).toHaveLength(0);
+  });
 });
