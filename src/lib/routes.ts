@@ -1,36 +1,30 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
+import type { Frontmatter } from './content/types';
+import { buildPermalink, getEntrySlug } from './content/utils';
 
-interface Frontmatter {
-  title?: string;
-  permalink?: string;
-  draft?: boolean;
-  published_at?: Date;
-}
-
-interface MdxArticleData {
+interface ArticleRouteData {
   frontmatter: Frontmatter;
   slug: string;
   permalink: string;
 }
 
-// すべてのMDX記事を読み込むヘルパー関数 (listAllRoutes関数内で使用)
-async function loadAllMdxArticles(): Promise<MdxArticleData[]> {
-  const mdxFiles = await fg('src/content/articles/**/*.mdx');
+// すべての記事 (.md / .mdx) を読み込むヘルパー関数 (listAllRoutes関数内で使用)
+async function loadAllArticles(): Promise<ArticleRouteData[]> {
+  const articleFiles = await fg('src/content/articles/**/*.{md,mdx}');
 
-  const allMdxArticles = mdxFiles.map((filepath) => {
+  const allArticles = articleFiles.map((filepath) => {
     const raw = fs.readFileSync(filepath, 'utf-8');
     const { data } = matter(raw);
     const frontmatter = data as Frontmatter;
-    const slug = path.basename(path.dirname(filepath)); // ファイルパスからスラッグを抽出
-    const permalink = frontmatter.permalink || `/articles/${slug}`;
+    const slug = getEntrySlug(filepath); // ファイルパスからスラッグを抽出
+    const permalink = buildPermalink(slug, frontmatter.permalink);
 
     return { frontmatter, slug, permalink };
   });
 
-  return allMdxArticles;
+  return allArticles;
 }
 
 export async function listAllRoutes(): Promise<string[]> {
@@ -54,7 +48,7 @@ export async function listAllRoutes(): Promise<string[]> {
 
   // 2. Article pages
   routes.add('/articles/'); // Add the base articles listing page
-  const allArticles = await loadAllMdxArticles();
+  const allArticles = await loadAllArticles();
   for (const article of allArticles) {
     routes.add(encodeURI(article.permalink));
   }

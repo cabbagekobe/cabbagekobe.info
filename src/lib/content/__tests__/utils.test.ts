@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, getEntrySlug, resolveCoverImagePath } from '../utils';
+import {
+  buildPermalink,
+  formatDate,
+  getEntrySlug,
+  resolveCoverImagePath,
+} from '../utils';
 
 describe('getEntrySlug', () => {
   it('ディレクトリ形式 (slug/index.mdx) からslugを抽出する', () => {
@@ -23,6 +28,24 @@ describe('getEntrySlug', () => {
   });
 });
 
+describe('buildPermalink', () => {
+  it('override がない場合は slug から既定のパーマリンクを生成する', () => {
+    expect(buildPermalink('20200501-linux')).toBe('/articles/20200501-linux');
+  });
+
+  it('override がある場合はそれを優先する', () => {
+    expect(buildPermalink('20200501-linux', '/custom/path/')).toBe(
+      '/custom/path/',
+    );
+  });
+
+  it('override が空文字の場合は既定のパーマリンクを生成する', () => {
+    expect(buildPermalink('20200501-linux', '')).toBe(
+      '/articles/20200501-linux',
+    );
+  });
+});
+
 describe('formatDate', () => {
   it('Dateオブジェクトをja-JP形式にフォーマットする', () => {
     const result = formatDate(new Date('2024-01-15'));
@@ -37,6 +60,10 @@ describe('formatDate', () => {
 
   it('undefinedの場合は空文字列を返す', () => {
     expect(formatDate(undefined)).toBe('');
+  });
+
+  it('無効な日付文字列の場合は空文字列を返す', () => {
+    expect(formatDate('invalid-date')).toBe('');
   });
 });
 

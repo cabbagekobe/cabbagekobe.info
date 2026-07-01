@@ -26,6 +26,18 @@ export function getEntrySlug(id: string): string {
 }
 
 /**
+ * 記事のパーマリンクを生成します。
+ * フロントマターで permalink が指定されていればそれを優先し、
+ * なければ slug から既定の `/articles/{slug}` を生成します。
+ * @param slug 記事のスラッグ
+ * @param override フロントマターで指定されたパーマリンク（任意）
+ * @returns パーマリンク文字列
+ */
+export function buildPermalink(slug: string, override?: string): string {
+  return override || `/articles/${slug}`;
+}
+
+/**
  * ソースファイルがデスティネーションファイルよりも新しい場合、
  * またはデスティネーションファイルが存在しない場合に、ファイルをコピーします。
  * コピー先のディレクトリが存在しない場合は作成されます。
@@ -56,18 +68,20 @@ export function copyFileIfModified(srcPath: string, destPath: string): void {
  */
 export function formatDate(date: string | Date | undefined | null): string {
   if (!date) return ''; // 日付が提供されない場合は空文字列を返す
-  try {
-    const d = new Date(date);
-    // 'ja-JP'ロケールで'numeric'オプションを使用すると'yyyy/MM/dd'形式になります。
-    return d.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  } catch (e) {
-    console.error(`Invalid date provided to formatDate: ${date}`, e);
+
+  const d = new Date(date);
+  // new Date は無効な入力でも例外を投げず Invalid Date を返すため、明示的に判定する
+  if (Number.isNaN(d.getTime())) {
+    console.error(`Invalid date provided to formatDate: ${String(date)}`);
     return ''; // 無効な日付の場合は空文字列を返す
   }
+
+  // 'ja-JP'ロケールで'numeric'オプションを使用すると'yyyy/MM/dd'形式になります。
+  return d.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
 }
 
 /**

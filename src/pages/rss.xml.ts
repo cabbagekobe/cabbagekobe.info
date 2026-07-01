@@ -1,6 +1,5 @@
 import rss from '@astrojs/rss';
 import { getAllPublishedArticles } from '@/lib/content/articles';
-import { getEntrySlug } from '@/lib/content/utils';
 import { siteConfig } from '@/site.config';
 
 export async function GET(context) {
@@ -11,7 +10,7 @@ export async function GET(context) {
     description: siteConfig.description,
     site: context.site || siteConfig.siteUrl,
     items: articles.map((article) => ({
-      link: `/articles/${getEntrySlug(article.id)}`,
+      link: article.permalink,
       title: article.data.title,
       pubDate: article.data.published_at,
       description: article.data.summary,

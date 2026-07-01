@@ -1,7 +1,7 @@
 // エントリをArticleオブジェクトに変換するユーティリティ関数
 import type { Entry } from 'astro:content';
 import type { Article } from '@/lib/content/types';
-import { getEntrySlug } from './utils';
+import { buildPermalink, getEntrySlug } from './utils';
 
 /**
  * エントリをArticleオブジェクトに変換
@@ -10,6 +10,6 @@ import { getEntrySlug } from './utils';
  */
 export function transformEntryToArticle(entry: Entry<'articles'>): Article {
   const slug = getEntrySlug(entry.id);
-  const permalink = entry.data.permalink || `/articles/${slug}`;
+  const permalink = buildPermalink(slug, entry.data.permalink);
   return { ...entry, permalink };
 }
