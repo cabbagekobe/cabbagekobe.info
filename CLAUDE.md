@@ -38,7 +38,7 @@ npm run check-all
 
 ## Architecture
 
-Astro 6 static site with TypeScript, Tailwind CSS 4, and MDX. Deployed to GitHub Pages via GitHub Actions on push to main.
+Astro 7 static site with TypeScript, Tailwind CSS 4, and MDX. Deployed to GitHub Pages via GitHub Actions on push to main.
 
 ### Content Flow
 
@@ -56,8 +56,9 @@ Astro 6 static site with TypeScript, Tailwind CSS 4, and MDX. Deployed to GitHub
 - `src/layouts/Base.astro` - Master layout with SEO, OGP meta, structured data (JSON-LD), dark mode
 - `src/components/articles/OGPCard.astro` - Custom MDX component for embedding OGP previews (registered in astro.config.mjs)
 
-### Astro 6 Specifics
+### Astro 7 Specifics
 
+- レガシーコンテンツコレクションを利用中（`astro.config.mjs` の `legacy.collectionsBackwardsCompat: true`）。`content.config.ts` は `type: 'content'`、entry ID はパスベース
 - Use `getCollection('articles')` (not deprecated `getEntry()`)
 - Use `entry.id` (not `entry.slug`)
 - Use `render(entry)` function (not `entry.render()` method)
