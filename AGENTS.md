@@ -102,9 +102,9 @@ src/
 - **List routes**: `npm run list:routes`
 - **Screenshots**: `npm run screenshot:pages` (requires Playwright)
 
-## Astro 6 Migration Notes
+## Astro 7 Migration Notes
 
-When working with content collections in Astro 6:
+When working with content collections in Astro 7 (legacy collections mode via `legacy.collectionsBackwardsCompat`):
 - Use `getCollection('articles')` instead of deprecated `getEntry()`
 - Use `entry.id` instead of `entry.slug`
 - Use `render(entry)` function instead of `entry.render()` method
