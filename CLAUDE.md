@@ -14,7 +14,7 @@ npm run dev              # Dev server (localhost:4321) with OGP prebuild
 npm run build            # Production build
 npm run preview          # Preview production build
 npm run clean            # Remove dist and .astro
-npm run check-all        # Full CI check: build + lint + test
+npm run check-all        # Full CI check: build + lint + typecheck + test
 
 # Testing (Vitest)
 npm run test                       # Run all tests once
@@ -24,6 +24,9 @@ npx vitest run src/lib/content     # Run tests in specific directory
 # Linting/Formatting (Biome)
 npm run lint             # Lint and auto-fix
 npm run format           # Format code
+
+# Type checking
+npm run typecheck        # astro check
 
 # Content
 npm run new:article      # Interactive CLI to scaffold new article
@@ -51,14 +54,14 @@ Astro 7 static site with TypeScript, Tailwind CSS 4, and MDX. Deployed to GitHub
 ### Key Modules
 
 - `src/site.config.ts` - Centralized site configuration (title, URL, pagination, OGP defaults)
-- `src/lib/content/` - Content processing: transform, filter, related articles, schema generation, utilities
+- `src/lib/content/` - Content processing: transform, filter, related articles, schema generation, utilities. `files.ts` is the single fs-based article loader for non-Collection consumers (raw Markdown endpoint, route listing)
 - `src/lib/constants.ts` - Shared constants (e.g., `HOME_LABEL`)
 - `src/layouts/Base.astro` - Master layout with SEO, OGP meta, structured data (JSON-LD), dark mode
 - `src/components/articles/OGPCard.astro` - Custom MDX component for embedding OGP previews (registered in astro.config.mjs)
 
 ### Astro 7 Specifics
 
-- レガシーコンテンツコレクションを利用中（`astro.config.mjs` の `legacy.collectionsBackwardsCompat: true`）。`content.config.ts` は `type: 'content'`、entry ID はパスベース
+- Legacy content collections are in use (`legacy.collectionsBackwardsCompat: true` in `astro.config.mjs`). `content.config.ts` uses `type: 'content'`, and entry IDs are path-based
 - Use `getCollection('articles')` (not deprecated `getEntry()`)
 - Use `entry.id` (not `entry.slug`)
 - Use `render(entry)` function (not `entry.render()` method)

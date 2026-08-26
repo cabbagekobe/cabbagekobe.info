@@ -5,5 +5,7 @@ dist/
 .env*
 .DS_Store
 
-# Ignore generated images, but keep the .gitkeep file
+# Ignore generated images, but keep the .gitkeep file and static OGP fallback image
 src/public/images/*
+!src/public/images/ogp/
+!src/public/images/ogp/default.png

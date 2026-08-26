@@ -1,32 +1,10 @@
-import fs from 'node:fs';
 import fg from 'fast-glob';
-import matter from 'gray-matter';
-import type { Frontmatter } from './content/types';
-import { buildPermalink, getEntrySlug } from './content/utils';
+import { loadArticleFiles } from './content/files';
 
-interface ArticleRouteData {
-  frontmatter: Frontmatter;
-  slug: string;
-  permalink: string;
-}
-
-// すべての記事 (.md / .mdx) を読み込むヘルパー関数 (listAllRoutes関数内で使用)
-async function loadAllArticles(): Promise<ArticleRouteData[]> {
-  const articleFiles = await fg('src/content/articles/**/*.{md,mdx}');
-
-  const allArticles = articleFiles.map((filepath) => {
-    const raw = fs.readFileSync(filepath, 'utf-8');
-    const { data } = matter(raw);
-    const frontmatter = data as Frontmatter;
-    const slug = getEntrySlug(filepath); // ファイルパスからスラッグを抽出
-    const permalink = buildPermalink(slug, frontmatter.permalink);
-
-    return { frontmatter, slug, permalink };
-  });
-
-  return allArticles;
-}
-
+/**
+ * サイト内のすべてのルート(静的ページ + 記事ページ)を列挙します。
+ * @returns ソート済みのルートパスの配列。
+ */
 export async function listAllRoutes(): Promise<string[]> {
   const routes = new Set<string>();
 
@@ -48,7 +26,7 @@ export async function listAllRoutes(): Promise<string[]> {
 
   // 2. Article pages
   routes.add('/articles/'); // Add the base articles listing page
-  const allArticles = await loadAllArticles();
+  const allArticles = await loadArticleFiles();
   for (const article of allArticles) {
     routes.add(encodeURI(article.permalink));
   }

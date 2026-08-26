@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import OGPCard from '@/components/articles/OGPCard.astro';
 import RelatedArticles from '@/components/articles/RelatedArticles.astro';
 import TableOfContents from '@/components/articles/TableOfContents.astro';
+import type { Crumb } from '@/components/Breadcrumb.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import { HOME_LABEL } from '@/lib/constants';
@@ -42,31 +43,15 @@ const { article, allArticles } = Astro.props;
 const { data } = article;
 const slug = getEntrySlug(article.id);
 
-// Safely extract data properties with defaults
-const {
-  title = 'Untitled',
-  summary = '',
-  meta_title,
-  meta_description,
-  published_at,
-  updated_at,
-  cover_image,
-  cover_caption,
-  show_toc = false,
-} = data;
+const { title, summary, meta_title, meta_description, cover_image } = data;
 
-const crumbs = [{ href: '/', label: HOME_LABEL }];
-crumbs.push({ label: title });
+const crumbs: Crumb[] = [{ href: '/', label: HOME_LABEL }, { label: title }];
 
 // カバー画像のパスを解決
 const coverSrc = resolveCoverImagePath(cover_image, slug);
 
 // TOCの取得
 const { Content, headings } = await render(article);
-
-if (import.meta.env.PROD && !isArticleVisible(data)) {
-  return Astro.redirect('/404');
-}
 
 const related = getRelatedArticles(article, allArticles);
 
@@ -76,11 +61,11 @@ const articleSchema = createArticleSchema(
   siteConfig,
 );
 const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
-const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
+const schemas = [articleSchema, breadcrumbSchema];
 ---
 
 <Base
-  title={meta_title ?? title ?? 'Article'}
+  title={meta_title ?? title}
   description={meta_description ?? summary}
   permalink={article.permalink}
   og={{
@@ -104,12 +89,12 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
           <figure class="mb-4">
             <img
               src={coverSrc}
-              alt={meta_title ?? title ?? ''}
+              alt={title}
               loading="lazy"
               class="w-full h-auto rounded-lg"
             />
             {data.cover_caption && (
-              <figcaption class="mt-2 text-scale-0 text-center text-text-body/80">
+              <figcaption class="mt-2 text-scale-0 text-center text-text-note">
                 {data.cover_caption}
               </figcaption>
             )}
@@ -117,7 +102,7 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
         )
       }
 
-      <div class="article-meta flex items-center text-scale--1 text-text-body/70">
+      <div class="article-meta flex items-center text-scale--1 text-text-note">
         {
           data.published_at && (
             <time datetime={data.published_at.toISOString()} class="mr-3">
@@ -126,7 +111,7 @@ const schemas = [articleSchema, breadcrumbSchema].filter(Boolean);
           )
         }
       </div>
-      {summary && <p class="text-scale--1 text-text-body/90 my-6">{summary}</p>}
+      {summary && <p class="text-scale--1 text-text-note my-6">{summary}</p>}
 
       {/* TOCを記事コンテンツの直前に配置 */}
       {headings && headings.length > 0 && data.show_toc === true && (

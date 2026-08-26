@@ -15,9 +15,11 @@ interface Props {
   articles: Article[];
   crumbs?: Crumb[];
   page?: Page<Article>;
+  noindex?: boolean;
 }
 
-const { title, description, permalink, articles, crumbs, page } = Astro.props;
+const { title, description, permalink, articles, crumbs, page, noindex } =
+  Astro.props;
 
 const webPageSchema = {
   '@type': 'WebPage',
@@ -29,7 +31,13 @@ const webPageSchema = {
 const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
 const schemas = [webPageSchema, breadcrumbSchema];
 ---
-<Base title={title} description={description} permalink={permalink} schemas={schemas}>
+<Base
+  title={title}
+  description={description}
+  permalink={permalink}
+  noindex={noindex}
+  schemas={schemas}
+>
   {crumbs && crumbs.length > 0 && <Breadcrumb crumbs={crumbs} />}
   {articles.length === 0 ? (
     <p>まだ記事がありません。</p>

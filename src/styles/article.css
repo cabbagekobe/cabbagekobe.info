@@ -28,7 +28,7 @@
 }
 
 .article-content h6 {
-  @apply text-scale-0 font-semibold mt-6 mb-3 text-text-body/80 leading-[1.6];
+  @apply text-scale-0 font-semibold mt-6 mb-3 leading-[1.6];
 }
 
 /* Paragraphs */
@@ -36,9 +36,9 @@
   @apply text-scale-0 mb-6 leading-[1.7];
 }
 
-/* Links */
+/* Links: アンダーラインは常時表示し、hover で太くする */
 .article-content a {
-  @apply text-accent/90 hover:text-accent hover:underline;
+  @apply text-link underline hover:decoration-2;
 }
 
 /* Inline elements */
@@ -74,7 +74,7 @@
 
 /* Blockquotes */
 .article-content blockquote {
-  @apply border-l-4 border-accent/50 pl-4 italic text-text-body/80 my-6;
+  @apply border-l-4 border-accent pl-4 italic text-text-note my-6;
 }
 
 .article-content blockquote p {
@@ -82,8 +82,9 @@
 }
 
 /* Code */
+/* bg-accent/10 だと text-code との実効コントラストがライトテーマで 7:1 を割るため /5 に調整 */
 .article-content code {
-  @apply text-scale--1 bg-accent/10 text-accent/80 px-1.5 py-0.5 rounded font-mono;
+  @apply text-scale--1 bg-accent/5 text-code px-1.5 py-0.5 rounded font-mono;
 }
 
 .article-content pre {
@@ -104,7 +105,7 @@
 }
 
 .article-content figcaption {
-  @apply text-scale--1 mt-0 text-center mb-4 text-text-body/80;
+  @apply text-scale--1 mt-0 text-center mb-4 text-text-note;
 }
 
 .article-content p:has(img) {
@@ -115,7 +116,7 @@
 }
 
 .article-content p:has(img) + p:has(em) {
-  @apply text-scale--1 mt-0 text-center text-text-body/80;
+  @apply text-scale--1 mt-0 text-center text-text-note;
 }
 
 .article-content hr {

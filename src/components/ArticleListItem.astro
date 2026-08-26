@@ -1,6 +1,6 @@
 ---
 import type { Article } from '@/lib/content/types';
-import { formatDate, resolveCoverImagePath } from '@/lib/content/utils';
+import { formatDate } from '@/lib/content/utils';
 
 export interface Props {
   article: Article;
@@ -8,23 +8,20 @@ export interface Props {
 
 const { article } = Astro.props;
 const fm = article.data;
-const cover = fm.cover_image
-  ? resolveCoverImagePath(fm.cover_image.src, article.id)
-  : undefined;
 const dateText = fm.published_at ? formatDate(fm.published_at) : '';
 ---
 <article class="flex flex-row overflow-hidden transition-all duration-300 ease-in-out">
   <div class="flex flex-1 flex-col pb-4">
     <h3 class="mb-2 text-scale-2 font-bold">
-      <a href={article.permalink} class="hover:underline">{fm.title}</a>
+      <a href={article.permalink} class="underline hover:decoration-2">{fm.title}</a>
     </h3>
 
-    <div class="mb-3 text-scale--1 text-text-body/70">
+    <div class="mb-3 text-scale--1 text-text-note">
       {dateText && <time datetime={fm.published_at.toISOString()}>{dateText}</time>}
     </div>
 
     {fm.summary && (
-      <p class="mb-4 text-scale-0 text-text-body/90 line-clamp-2">{fm.summary}</p>
+      <p class="mb-4 text-scale-0 line-clamp-2">{fm.summary}</p>
     )}
   </div>
 </article>

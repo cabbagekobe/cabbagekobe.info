@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 
 const pagesCollection = defineCollection({
   type: 'content',
@@ -16,6 +17,7 @@ const articlesCollection = defineCollection({
     z.object({
       title: z.string(),
       published_at: z.date(),
+      updated_at: z.date().optional(),
       summary: z.string().optional(),
       meta_title: z.string().optional(),
       meta_description: z.string().optional(),

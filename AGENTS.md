@@ -24,7 +24,12 @@ npx vitest run --reporter=verbose  # Verbose output
 # Linting/Formatting (Biome)
 npm run lint          # Lint and auto-fix issues
 npm run format        # Format code with Biome
-npm run check-all     # Full CI check: build + lint + test
+
+# Type checking
+npm run typecheck     # astro check
+
+# Full CI check
+npm run check-all     # build + lint + typecheck + test
 ```
 
 ## Code Style Guidelines

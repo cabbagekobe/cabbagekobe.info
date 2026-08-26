@@ -66,5 +66,6 @@ The site automatically deploys when you push to the main branch. You can monitor
 | `npm run format`          | Format code with Biome                           |
 | `npm run lint`            | Lint and fix code with Biome                     |
 | `npm run test`            | Run tests                                        |
-| `npm run check-all`       | Build, lint, and test                            |
+| `npm run typecheck`       | Type-check with `astro check`                    |
+| `npm run check-all`       | Build, lint, typecheck, and test                 |
 

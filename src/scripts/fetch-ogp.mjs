@@ -32,8 +32,30 @@ async function fetchOgpData() {
 
   console.log(`[fetch-ogp] Found ${uniqueUrls.size} unique URLs.`);
 
+  // 既存キャッシュを読み込み、取得成功済みの URL は再取得しない
+  // (取得失敗した fallback エントリは毎回リトライする)
+  let existingCache = {};
+  if (existsSync(OGP_CACHE_PATH)) {
+    try {
+      existingCache = JSON.parse(readFileSync(OGP_CACHE_PATH, 'utf-8'));
+    } catch {
+      console.warn('[fetch-ogp] Could not parse existing cache. Refetching all.');
+    }
+  }
+
   const ogpCache = {};
-  const urlsToFetch = Array.from(uniqueUrls);
+  const urlsToFetch = [];
+  for (const url of uniqueUrls) {
+    const cached = existingCache[url];
+    if (cached && !cached.fallback) {
+      ogpCache[url] = cached;
+    } else {
+      urlsToFetch.push(url);
+    }
+  }
+  console.log(
+    `[fetch-ogp] ${uniqueUrls.size - urlsToFetch.length} cached, ${urlsToFetch.length} to fetch.`,
+  );
 
   for (const url of urlsToFetch) {
     try {

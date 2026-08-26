@@ -1,5 +1,5 @@
 ---
-import type { Page } from 'astro';
+import type { GetStaticPaths, Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
 import { getAllArticles } from '@/lib/content/articles';
@@ -7,7 +7,7 @@ import { isArticleVisible } from '@/lib/content/filters';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
-export async function getStaticPaths({ paginate }) {
+export const getStaticPaths = (async ({ paginate }) => {
   if (import.meta.env.PROD) {
     return [];
   }
@@ -21,6 +21,10 @@ export async function getStaticPaths({ paginate }) {
     );
 
   return paginate(previewArticles, { pageSize: siteConfig.articlesPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Article>;
 }
 
 const { page } = Astro.props;
