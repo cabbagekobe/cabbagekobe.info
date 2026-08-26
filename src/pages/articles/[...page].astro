@@ -1,14 +1,18 @@
 ---
-import type { Page } from 'astro';
+import type { GetStaticPaths, Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
 import { getAllPublishedArticles } from '@/lib/content/articles';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
 
-export async function getStaticPaths({ paginate }) {
+export const getStaticPaths = (async ({ paginate }) => {
   const publishedArticles = await getAllPublishedArticles();
   return paginate(publishedArticles, { pageSize: siteConfig.articlesPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Article>;
 }
 
 const { page } = Astro.props;

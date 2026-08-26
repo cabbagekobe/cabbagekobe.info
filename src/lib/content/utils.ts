@@ -1,6 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
 /**
  * Astro 6のentry.idからslugを抽出します。
  * Astro 6 では entry.id にコレクション名は含まれません。
@@ -35,30 +32,6 @@ export function getEntrySlug(id: string): string {
  */
 export function buildPermalink(slug: string, override?: string): string {
   return override || `/articles/${slug}`;
-}
-
-/**
- * ソースファイルがデスティネーションファイルよりも新しい場合、
- * またはデスティネーションファイルが存在しない場合に、ファイルをコピーします。
- * コピー先のディレクトリが存在しない場合は作成されます。
- * @param srcPath コピー元のファイルパス。
- * @param destPath コピー先のファイルパス。
- */
-export function copyFileIfModified(srcPath: string, destPath: string): void {
-  if (!fs.existsSync(srcPath)) {
-    return;
-  }
-
-  const destDir = path.dirname(destPath);
-  fs.mkdirSync(destDir, { recursive: true }); // コピー先ディレクトリを作成
-
-  // コピーが必要かどうかを判定（デスティネーションファイルがない、またはソースの方が新しい場合）
-  const needsCopy =
-    !fs.existsSync(destPath) ||
-    fs.statSync(srcPath).mtimeMs > fs.statSync(destPath).mtimeMs;
-  if (needsCopy) {
-    fs.copyFileSync(srcPath, destPath); // ファイルをコピー
-  }
 }
 
 /**

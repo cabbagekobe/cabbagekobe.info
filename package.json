@@ -18,9 +18,11 @@
     "screenshot:pages": "tsx src/scripts/screenshot-pages.ts",
     "start": "npm run dev",
     "test": "vitest --run",
-    "check-all": "astro build && npm run lint && npm run test"
+    "typecheck": "astro check",
+    "check-all": "astro build && npm run lint && npm run typecheck && npm run test"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@biomejs/biome": "^2.4.10",
@@ -39,6 +41,7 @@
     "rimraf": "^6.1.3",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
     "vitest": "^4.0.18"
   },
   "dependencies": {

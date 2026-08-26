@@ -5,7 +5,6 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  alias: { '@': './src' },
   publicDir: './src/public',
   output: 'static',
   outDir: './dist',

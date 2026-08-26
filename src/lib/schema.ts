@@ -13,7 +13,10 @@ export const createWebSiteSchema = (config: SiteConfig) => {
   };
 };
 
-export const createBreadcrumbSchema = (crumbs: Crumb[], siteUrl: string) => {
+export const createBreadcrumbSchema = (
+  crumbs: Crumb[] | undefined,
+  siteUrl: string,
+) => {
   if (!crumbs || crumbs.length === 0) {
     return null;
   }
@@ -44,10 +47,11 @@ export const createArticleSchema = (
   const coverSrc = cover_image
     ? resolveCoverImagePath(cover_image, getEntrySlug(article.id))
     : undefined;
+  const articleUrl = new URL(article.permalink, siteUrl).href;
 
   return {
     '@type': 'Article',
-    '@id': `${siteUrl}/articles/${getEntrySlug(article.id)}/`,
+    '@id': articleUrl,
     headline: title,
     description: summary,
     image: coverSrc,
@@ -63,7 +67,7 @@ export const createArticleSchema = (
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${siteUrl}/articles/${getEntrySlug(article.id)}/`,
+      '@id': articleUrl,
     },
   };
 };

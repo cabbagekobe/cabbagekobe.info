@@ -40,7 +40,8 @@ describe('listAllRoutes', () => {
     });
 
     // fs.readFileSync のモック設定
-    vi.mocked(fs.readFileSync).mockImplementation((filepath: string) => {
+    vi.mocked(fs.readFileSync).mockImplementation((rawPath) => {
+      const filepath = String(rawPath);
       if (filepath.includes('20251220-test')) {
         return `---
 title: Test Article
@@ -64,15 +65,10 @@ Content for cool article.`;
       return '';
     });
 
-    // テスト用の型定義
-    interface MockGrayMatterFile {
-      data: { [key: string]: string };
-      content: string;
-    }
     // gray-matter のモック設定
-    vi.mocked(matter).mockImplementation((raw: string): MockGrayMatterFile => {
+    vi.mocked(matter).mockImplementation((raw) => {
       // raw テキストからフロントマターを直接解析するシンプルなロジック
-      const frontmatterMatch = raw.match(/---\n([\s\S]*?)\n---/);
+      const frontmatterMatch = String(raw).match(/---\n([\s\S]*?)\n---/);
       if (frontmatterMatch?.[1]) {
         const frontmatterStr = frontmatterMatch[1];
         const data: { [key: string]: string } = {};
@@ -85,9 +81,9 @@ Content for cool article.`;
             data[key] = value.replace(/^['"]|['"]$/g, '');
           }
         });
-        return { data, content: '' };
+        return { data, content: '' } as unknown as ReturnType<typeof matter>;
       }
-      return { data: {}, content: '' };
+      return { data: {}, content: '' } as unknown as ReturnType<typeof matter>;
     });
 
     const expectedRoutes = [

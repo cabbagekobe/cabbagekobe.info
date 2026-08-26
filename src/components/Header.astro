@@ -2,7 +2,7 @@
 import { siteConfig } from '@/site.config';
 ---
 <header
-  class="sticky top-0 z-40 w-full bg-opacity-60 backdrop-blur-xs bg-background border-b border-accent/10 shadow-xs transition-all duration-100 ease-in-out"
+  class="sticky top-0 z-40 w-full bg-background border-b border-line shadow-xs"
 >
   <div
     class:list={[
@@ -16,7 +16,7 @@ import { siteConfig } from '@/site.config';
     ]}
   >
     <h1 class="font-bold text-scale-2">
-      <a href="/">{siteConfig.title}</a>
+      <a href="/" class="underline hover:decoration-2">{siteConfig.title}</a>
     </h1>
   </div>
 </header>

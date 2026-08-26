@@ -34,7 +34,12 @@ const schemas = [webPageSchema, breadcrumbSchema];
 const { Content } = await render(aboutEntry);
 ---
 
-<Base title={title} description={description} schemas={schemas}>
+<Base
+  title={title}
+  description={description}
+  permalink="/about/"
+  schemas={schemas}
+>
   <Breadcrumb crumbs={crumbs} />
 
   <div class="article-content">

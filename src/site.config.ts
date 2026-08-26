@@ -9,9 +9,6 @@ export const siteConfig = {
     width: 'max-w-5xl',
   },
   ogp: {
-    defaultImage: '/images/ogp/default.svg',
-  },
-  sns: {
-    twitter: '@username',
+    defaultImage: '/images/ogp/default.png',
   },
 };

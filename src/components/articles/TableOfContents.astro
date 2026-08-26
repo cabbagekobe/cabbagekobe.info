@@ -12,6 +12,15 @@ const filteredHeadings = headings.filter(
   (heading) => heading.depth === 2 || heading.depth === 3,
 );
 
+// set:html に渡す文字列に混入しないよう HTML 特殊文字をエスケープする
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // 目次を非再帰的にネストされたリストとして構築する関数
 function renderToc(headings: Heading[]): string {
   if (!headings || headings.length === 0) {
@@ -38,7 +47,7 @@ function renderToc(headings: Heading[]): string {
     // 現在の深さを更新
     currentDepth = heading.depth;
 
-    html += `<li><a href="#${heading.slug}">${heading.text}</a></li>`;
+    html += `<li><a href="#${escapeHtml(heading.slug)}" class="underline hover:decoration-2">${escapeHtml(heading.text)}</a></li>`;
   });
 
   // 残りの開いている <ul> タグを閉じる

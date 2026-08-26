@@ -1,8 +1,9 @@
 import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
 import { getAllPublishedArticles } from '@/lib/content/articles';
 import { siteConfig } from '@/site.config';
 
-export async function GET(context) {
+export async function GET(context: APIContext): Promise<Response> {
   const articles = await getAllPublishedArticles();
 
   return rss({

@@ -33,6 +33,15 @@ jobs:
       - name: Build site
         run: npm run build
 
+      - name: Lint
+        run: npx @biomejs/biome ci .
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:

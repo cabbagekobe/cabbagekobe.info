@@ -3,18 +3,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: rgb(var(--color-background-rgb) / <alpha-value>);
-  --color-text-body: rgb(var(--color-text-body-rgb) / <alpha-value>);
-  --color-accent: rgb(var(--color-accent-rgb) / <alpha-value>);
-  --color-primary: rgb(var(--color-accent-rgb) / <alpha-value>);
-  --color-line: rgb(var(--color-line-rgb) / <alpha-value>);
-  --color-card-background: rgb(var(--color-card-background-rgb) / <alpha-value>);
+  /*
+   * Tailwind 4 では v3 の `<alpha-value>` プレースホルダーは使えない
+   * (リテラル出力されて宣言全体が無効になる)。実色で定義する。
+   */
+  --color-background: rgb(var(--color-background-rgb));
+  --color-text-body: rgb(var(--color-text-body-rgb));
+  /* 注釈用テキスト。背景に対して 4.5:1 以上を確保した実色(alpha 減光は使わない) */
+  --color-text-note: rgb(var(--color-text-note-rgb));
+  /* リンク用テキスト。背景に対して 7:1 以上を確保 */
+  --color-link: rgb(var(--color-link-rgb));
+  /* インラインコード用テキスト。リンクと同色だが意味的に分離しておく */
+  --color-code: rgb(var(--color-link-rgb));
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-primary: rgb(var(--color-accent-rgb));
+  --color-line: rgb(var(--color-line-rgb));
+  --color-card-background: rgb(var(--color-card-background-rgb));
 
   --font-sans:
     "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Noto Sans", "Noto Sans CJK JP", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  --text-scale--1: clamp(0.7rem, calc(0.5378rem + 0.8628vw), 1.05rem);
-  --text-scale-0: clamp(0.875rem, calc(0.6223rem + 1.0785vw), 1.3125rem);
+  /* lang="ja" のため最小 16px (1rem) を下回らないこと */
+  --text-scale--1: clamp(1rem, calc(0.5378rem + 0.8628vw), 1.05rem);
+  --text-scale-0: clamp(1rem, calc(0.6223rem + 1.0785vw), 1.3125rem);
   --text-scale-1: clamp(1.09375rem, calc(0.8878rem + 1.2828vw), 1.640625rem);
   --text-scale-2: clamp(
     1.3671875rem,
@@ -37,24 +48,49 @@
 :root {
   --page-max: 72rem;
 
-  /* Light Theme */
+  /*
+   * Light Theme
+   * コントラスト比の根拠 (背景 #e8e8e8 / カード #ffffff に対して):
+   * - text-body #2a2a2a: 11.7:1 (本文 7:1 以上)
+   * - text-note #595959: 5.7:1 (注釈 4.5:1 以上)
+   * - link #3d4a46: 7.6:1 (本文 7:1 以上)
+   * - line #767676: 3.7:1 / accent #6a7b76: 3.6:1 (非テキスト 3:1 以上)
+   */
   --color-background-rgb: 232 232 232;
   --color-text-body-rgb: 42 42 42;
+  --color-text-note-rgb: 89 89 89;
+  --color-link-rgb: 61 74 70;
   --color-accent-rgb: 106 123 118;
-  --color-line-rgb: 229 229 224;
+  --color-line-rgb: 118 118 118;
   --color-card-background-rgb: 255 255 255;
 }
 
 .dark {
-  /* Dark Theme */
+  /*
+   * Dark Theme
+   * コントラスト比の根拠 (背景 #1c1c1c / カード #2c2c2c に対して):
+   * - text-body #ededed: 14.5:1 (本文 7:1 以上)
+   * - text-note #9e9e9e: 6.4:1 / 対カード 5.2:1 (注釈 4.5:1 以上)
+   * - link #a8bcb5: 8.5:1 / 対カード 7.1:1 (本文 7:1 以上)
+   * - line #828282: 4.4:1 / 対カード 3.6:1 (非テキスト 3:1 以上)
+   */
   --color-background-rgb: 28 28 28;
   --color-text-body-rgb: 237 237 237;
+  --color-text-note-rgb: 158 158 158;
+  --color-link-rgb: 168 188 181;
   --color-accent-rgb: 106 123 118;
-  --color-line-rgb: 42 42 42;
+  --color-line-rgb: 130 130 130;
   --color-card-background-rgb: 44 44 44;
 }
 
 html {
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
+}
+
+/* Reduce Motion 設定時はスムーススクロールを無効化する */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

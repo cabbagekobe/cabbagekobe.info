@@ -7,14 +7,8 @@ const createArticleMock = (
   permalink: string,
 ): Article => ({
   id: `${slug}/index.mdx`,
-  slug: slug,
   collection: 'articles',
   body: '## Test Content',
-  render: async () => ({
-    Content: () => '<div>Test Content</div>',
-    headings: [],
-  }),
-  filepath: `src/content/articles/${slug}/index.mdx`,
   permalink,
   data: {
     title: `Test Article ${slug}`,
@@ -22,13 +16,8 @@ const createArticleMock = (
     updated_at: new Date(published_at),
     summary: `Summary of Test Article ${slug}`,
     draft: false,
-    cover_image: null,
+    show_toc: false,
   },
-  html: '<div>Test Content</div>',
-  markdown: '## Test Content',
-  raw: `---\ntitle: "Test Article ${slug}"\n---\n## Test Content`,
-  resolvedAuthors: [],
-  headings: [],
 });
 
 describe('getRelatedArticles', async () => {

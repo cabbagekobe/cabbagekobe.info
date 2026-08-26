@@ -10,16 +10,16 @@ export interface Props {
 
 const { crumbs } = Astro.props;
 ---
-<nav aria-label="breadcrumb" class="mb-6 flex items-center text-scale--1 text-text-body/70">
+<nav aria-label="breadcrumb" class="mb-6 flex items-center text-scale--1 text-text-note">
   {crumbs.map((crumb, i) => (
     <div
       class:list={[
         'flex items-center',
-        i < crumbs.length - 1 && "after:content-['/'] after:mx-2 after:text-text-body/50",
+        i < crumbs.length - 1 && "after:content-['/'] after:mx-2 after:text-text-note",
       ]}
     >
       {crumb.href ? (
-        <a href={crumb.href} class="hover:underline text-text-body">
+        <a href={crumb.href} class="underline hover:decoration-2 text-text-body">
           {crumb.label}
         </a>
       ) : (

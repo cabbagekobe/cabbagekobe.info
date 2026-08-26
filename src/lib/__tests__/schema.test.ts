@@ -13,14 +13,8 @@ import {
 const createMockArticle = (overrides: Partial<Article> = {}): Article => {
   const defaultArticle: Article = {
     id: '20240101-test-article/index.mdx',
-    slug: '20240101-test-article',
     collection: 'articles',
     body: '## Test',
-    render: async () => ({
-      Content: () => '<div>Test</div>',
-      headings: [],
-    }),
-    filepath: 'src/content/articles/20240101-test-article/index.mdx',
     permalink: '/articles/20240101-test-article',
     data: {
       title: 'Test Article',
@@ -28,12 +22,9 @@ const createMockArticle = (overrides: Partial<Article> = {}): Article => {
       cover_image: undefined,
       published_at: new Date('2024-01-01'),
       updated_at: new Date('2024-01-01'),
+      draft: false,
+      show_toc: false,
     },
-    html: '<div>Test</div>',
-    markdown: '## Test',
-    raw: '',
-    resolvedAuthors: [],
-    headings: [],
   };
   return { ...defaultArticle, ...overrides };
 };
@@ -47,6 +38,9 @@ describe('createWebSiteSchema', () => {
       articlesPerPage: 10,
       layout: {
         width: 'max-w-5xl',
+      },
+      ogp: {
+        defaultImage: '/images/ogp/default.png',
       },
     };
 
@@ -105,6 +99,8 @@ describe('createArticleSchema', () => {
         cover_image: undefined,
         published_at: new Date('2024-01-01'),
         updated_at: new Date('2024-01-02'),
+        draft: false,
+        show_toc: false,
       },
     });
 
@@ -112,7 +108,7 @@ describe('createArticleSchema', () => {
 
     expect(schema).toEqual({
       '@type': 'Article',
-      '@id': `${siteUrl}/articles/20240101-test-article/`,
+      '@id': `${siteUrl}/articles/20240101-test-article`,
       headline: 'Test Article',
       description: 'This is a test article.',
       image: undefined,
@@ -128,37 +124,35 @@ describe('createArticleSchema', () => {
       },
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `${siteUrl}/articles/20240101-test-article/`,
+        '@id': `${siteUrl}/articles/20240101-test-article`,
       },
     });
   });
 
-  it('文字列のカバー画像を持つ記事に対して、画像パスを解決する', () => {
+  it('frontmatter で permalink を上書きした記事では @id にその permalink を使う', () => {
+    const article = createMockArticle({ permalink: '/custom-path/' });
+
+    const schema = createArticleSchema(article, siteUrl, siteConfig);
+
+    expect(schema['@id']).toBe(`${siteUrl}/custom-path/`);
+    expect(schema.mainEntityOfPage['@id']).toBe(`${siteUrl}/custom-path/`);
+  });
+
+  it('コンテンツ内パスのカバー画像を持つ記事に対して、画像パスを解決する', () => {
     const article = createMockArticle({
       data: {
         title: 'Test Article with Image',
         summary: 'This article has an image.',
-        cover_image: '/src/content/articles/20240101-test-article/image.jpg',
-        published_at: new Date('2024-01-01'),
-        updated_at: new Date('2024-01-01'),
-      },
-    });
-
-    const schema = createArticleSchema(article, siteUrl, siteConfig);
-
-    expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
-  });
-
-  it('オブジェクト形式のカバー画像を持つ記事に対して、画像パスを解決する', () => {
-    const article = createMockArticle({
-      data: {
-        title: 'Test Article with Image Object',
-        summary: 'This article has an image object.',
         cover_image: {
           src: '/src/content/articles/20240101-test-article/image.jpg',
+          width: 1200,
+          height: 630,
+          format: 'jpg',
         },
         published_at: new Date('2024-01-01'),
         updated_at: new Date('2024-01-01'),
+        draft: false,
+        show_toc: false,
       },
     });
 
@@ -172,9 +166,16 @@ describe('createArticleSchema', () => {
       data: {
         title: 'Test Article with Relative Image',
         summary: 'This article has a relative image.',
-        cover_image: './image.jpg',
+        cover_image: {
+          src: './image.jpg',
+          width: 1200,
+          height: 630,
+          format: 'jpg',
+        },
         published_at: new Date('2024-01-01'),
         updated_at: new Date('2024-01-01'),
+        draft: false,
+        show_toc: false,
       },
     });
 
