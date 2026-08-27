@@ -21,11 +21,12 @@ const ogp = getOgp(url);
         <div class="mt-1 text-scale--1 text-text-body line-clamp-1">{ogp.description || ''}</div>
         <div class="mt-auto truncate pt-1 text-scale--1 text-text-note">{ogp.siteName || new URL(url).hostname}</div>
       </div>
+      <span class="sr-only">（新しいタブで開く）</span>
     </a>
   </div>
 ) : (
   <p>
-    <a href={url} target="_blank" rel="noopener noreferrer" class="text-link underline hover:decoration-2">{url}</a>
+    <a href={url} target="_blank" rel="noopener noreferrer" class="text-link underline hover:decoration-2">{url}<span class="sr-only">（新しいタブで開く）</span></a>
     <br />
     <em>(OGP情報の取得に失敗しました)</em>
   </p>

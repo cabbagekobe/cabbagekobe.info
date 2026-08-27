@@ -88,6 +88,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+ * キーボードフォーカスのインジケーターを強化する（既定の削除は行わない）。
+ * text-body 色は両テーマで背景に対し最大級のコントラストを持つ。
+ */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-text-body-rgb));
+  outline-offset: 2px;
+}
+
 /* Reduce Motion 設定時はスムーススクロールを無効化する */
 @media (prefers-reduced-motion: reduce) {
   html {

@@ -12,8 +12,7 @@ MV公開日にまさかの1st写真集の発売が発表！！情報量が多い
 
 
 
-櫻坂46『Cool』
-==========================
+## 櫻坂46『Cool』
 
 <div class="youtube">
   <iframe width="560" height="315" src="https://www.youtube.com/embed/XEKPn3WbksE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

@@ -9,7 +9,7 @@ interface Props {
 const { page } = Astro.props;
 ---
 
-<nav aria-label="Pagination" class="flex justify-center gap-8 text-scale--1">
+<nav aria-label="ページ送り" class="flex justify-center gap-8 text-scale--1">
   {page.url.prev && (
     <a href={page.url.prev} class="underline hover:decoration-2">
       &laquo; 前のページ

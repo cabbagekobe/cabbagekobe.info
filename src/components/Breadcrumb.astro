@@ -10,7 +10,7 @@ export interface Props {
 
 const { crumbs } = Astro.props;
 ---
-<nav aria-label="breadcrumb" class="mb-6 flex items-center text-scale--1 text-text-note">
+<nav aria-label="パンくずリスト" class="mb-6 flex items-center text-scale--1 text-text-note">
   {crumbs.map((crumb, i) => (
     <div
       class:list={[

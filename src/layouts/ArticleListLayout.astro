@@ -38,6 +38,7 @@ const schemas = [webPageSchema, breadcrumbSchema];
   noindex={noindex}
   schemas={schemas}
 >
+  <h1 class="sr-only">{title}</h1>
   {crumbs && crumbs.length > 0 && <Breadcrumb crumbs={crumbs} />}
   {articles.length === 0 ? (
     <p>まだ記事がありません。</p>
