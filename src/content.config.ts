@@ -1,8 +1,16 @@
 import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
+// `_` 始まりのファイル・ディレクトリを除外する（レガシーコレクションと同じ挙動）
+const contentPattern = [
+  '**/*.{md,mdx}',
+  '!**/_*/**/*.{md,mdx}',
+  '!**/_*.{md,mdx}',
+];
+
 const pagesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: contentPattern, base: './src/content/pages' }),
   schema: z.object({
     title: z.string(),
     summary: z.string(),
@@ -12,7 +20,10 @@ const pagesCollection = defineCollection({
 });
 
 const articlesCollection = defineCollection({
-  type: 'content',
+  loader: glob({
+    pattern: contentPattern,
+    base: './src/content/articles',
+  }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),

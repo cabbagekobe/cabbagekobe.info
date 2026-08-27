@@ -109,11 +109,11 @@ src/
 
 ## Astro 7 Migration Notes
 
-When working with content collections in Astro 7 (legacy collections mode via `legacy.collectionsBackwardsCompat`):
+When working with content collections in Astro 7 (Content Layer API with `glob()` loaders):
 - Use `getCollection('articles')` instead of deprecated `getEntry()`
-- Use `entry.id` instead of `entry.slug`
+- Use `entry.id` instead of `entry.slug` — entry IDs are slug-based (e.g. `20240101-slug`), so `entry.id` IS the slug
 - Use `render(entry)` function instead of `entry.render()` method
-- Use the `getEntrySlug(id)` utility from `@/lib/content/utils` to extract slugs from entry IDs
+- The `getEntrySlug(id)` utility from `@/lib/content/utils` extracts slugs from file paths (used by fs-based loading in `files.ts`); it is not needed for Collection entries
 
 ## Notes
 

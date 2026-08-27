@@ -1,6 +1,6 @@
 import type { Crumb } from '@/components/Breadcrumb.astro';
 import type { Article } from '@/lib/content/types';
-import { getEntrySlug, resolveCoverImagePath } from '@/lib/content/utils';
+import { resolveCoverImagePath } from '@/lib/content/utils';
 import type { SiteConfig } from '@/site.config';
 
 export const createWebSiteSchema = (config: SiteConfig) => {
@@ -45,7 +45,7 @@ export const createArticleSchema = (
   const { title, summary, cover_image, published_at, updated_at } =
     article.data;
   const coverSrc = cover_image
-    ? resolveCoverImagePath(cover_image, getEntrySlug(article.id))
+    ? resolveCoverImagePath(cover_image, article.id)
     : undefined;
   const articleUrl = new URL(article.permalink, siteUrl).href;
 

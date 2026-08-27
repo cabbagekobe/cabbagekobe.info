@@ -6,7 +6,7 @@ const createArticleMock = (
   published_at: string,
   permalink: string,
 ): Article => ({
-  id: `${slug}/index.mdx`,
+  id: slug,
   collection: 'articles',
   body: '## Test Content',
   permalink,
@@ -35,9 +35,9 @@ describe('getRelatedArticles', async () => {
     const related = getRelatedArticles(target, articles, 3);
 
     expect(related.map((a) => a.id)).toEqual([
-      'a/index.mdx', // 4 days away
-      'c/index.mdx', // 5 days away
-      'd/index.mdx', // 15 days away
+      'a', // 4 days away
+      'c', // 5 days away
+      'd', // 15 days away
     ]);
   });
 

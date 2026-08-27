@@ -19,6 +19,10 @@ export type ArticleFile = {
  * すべての記事ファイル (.md / .mdx) を fs から直接読み込みます。
  * Astro の Content Collection を経由できない箇所
  * (生 Markdown 配信エンドポイント・ルート列挙スクリプト)で使用します。
+ *
+ * 注意: ここで得る slug は生のディレクトリ名で、Collection 側 (glob ローダー)
+ * は githubSlug() 適用後の値になる。ディレクトリ名を小文字英数字とハイフン・
+ * アンダースコアに限定する `npm run new:article` の生成規則により一致が保たれる。
  * @returns 記事ファイル情報の配列。
  */
 export async function loadArticleFiles(): Promise<ArticleFile[]> {

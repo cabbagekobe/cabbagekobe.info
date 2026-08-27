@@ -61,11 +61,11 @@ Astro 7 static site with TypeScript, Tailwind CSS 4, and MDX. Deployed to GitHub
 
 ### Astro 7 Specifics
 
-- Legacy content collections are in use (`legacy.collectionsBackwardsCompat: true` in `astro.config.mjs`). `content.config.ts` uses `type: 'content'`, and entry IDs are path-based
+- Content Layer API with `glob()` loaders (`src/content.config.ts`). Entry IDs are slug-based (e.g. `20240101-slug`), so `entry.id` IS the slug
 - Use `getCollection('articles')` (not deprecated `getEntry()`)
 - Use `entry.id` (not `entry.slug`)
 - Use `render(entry)` function (not `entry.render()` method)
-- Use `getEntrySlug(id)` from `@/lib/content/utils` to extract slugs from entry IDs
+- `getEntrySlug()` from `@/lib/content/utils` is for extracting slugs from file paths (fs-based loading in `files.ts`), not needed for Collection entries
 
 ## Code Style
 
