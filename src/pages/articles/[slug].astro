@@ -10,11 +10,7 @@ import { HOME_LABEL } from '@/lib/constants';
 import { getAllArticles, getRelatedArticles } from '@/lib/content/articles';
 import { isArticleVisible } from '@/lib/content/filters';
 import type { Article } from '@/lib/content/types';
-import {
-  formatDate,
-  getEntrySlug,
-  resolveCoverImagePath,
-} from '@/lib/content/utils';
+import { formatDate, resolveCoverImagePath } from '@/lib/content/utils';
 import { createArticleSchema, createBreadcrumbSchema } from '@/lib/schema';
 import { siteConfig } from '@/site.config';
 
@@ -25,13 +21,10 @@ export async function getStaticPaths() {
     ? allArticles.filter(({ data }) => isArticleVisible(data))
     : allArticles;
 
-  return articlesToBuild.map((currentArticle) => {
-    const articleSlug = getEntrySlug(currentArticle.id);
-    return {
-      params: { slug: articleSlug },
-      props: { article: currentArticle, allArticles: articlesToBuild },
-    };
-  });
+  return articlesToBuild.map((currentArticle) => ({
+    params: { slug: currentArticle.id },
+    props: { article: currentArticle, allArticles: articlesToBuild },
+  }));
 }
 
 interface Props {
@@ -41,7 +34,7 @@ interface Props {
 
 const { article, allArticles } = Astro.props;
 const { data } = article;
-const slug = getEntrySlug(article.id);
+const slug = article.id;
 
 const { title, summary, meta_title, meta_description, cover_image } = data;
 

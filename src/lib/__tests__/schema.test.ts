@@ -12,7 +12,7 @@ import {
 // Article 型のモックデータを作成するヘルパー関数
 const createMockArticle = (overrides: Partial<Article> = {}): Article => {
   const defaultArticle: Article = {
-    id: '20240101-test-article/index.mdx',
+    id: '20240101-test-article',
     collection: 'articles',
     body: '## Test',
     permalink: '/articles/20240101-test-article',

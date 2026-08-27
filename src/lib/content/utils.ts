@@ -1,11 +1,12 @@
 /**
- * Astro 6のentry.idからslugを抽出します。
- * Astro 6 では entry.id にコレクション名は含まれません。
+ * 記事ファイルのパスからslugを抽出します。
+ * fs 直読み（files.ts）でファイルパスを slug に変換する用途で使用します。
+ * Content Layer の entry.id は slug そのものなので、Collection 経由では不要です。
  * - `YYYYMMDD-slug/index.mdx` → `YYYYMMDD-slug`
  * - `YYYYMMDD-slug/index.md` → `YYYYMMDD-slug`
  * - `YYYYMMDD-slug.mdx` → `YYYYMMDD-slug`
  * - `YYYYMMDD-slug.md` → `YYYYMMDD-slug`
- * @param id コンテンツエントリのID
+ * @param id 記事ファイルのパス（またはレガシー形式のエントリID）
  * @returns slug文字列
  */
 export function getEntrySlug(id: string): string {

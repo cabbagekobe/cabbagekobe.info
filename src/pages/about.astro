@@ -6,9 +6,7 @@ import { HOME_LABEL } from '@/lib/constants';
 import { createBreadcrumbSchema } from '@/lib/schema';
 
 const pages = await getCollection('pages');
-const aboutEntry = pages.find(
-  (entry) => entry.id.startsWith('about') && !entry.id.includes('/'),
-);
+const aboutEntry = pages.find((entry) => entry.id === 'about');
 
 if (!aboutEntry) {
   throw new Error('About page content not found.');
