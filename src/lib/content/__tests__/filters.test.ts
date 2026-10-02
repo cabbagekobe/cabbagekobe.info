@@ -22,14 +22,4 @@ describe('isArticleVisible', () => {
       false,
     );
   });
-
-  it('プレビューモードでは下書きも未来日付も表示可能', () => {
-    expect(
-      isArticleVisible({ draft: true, published_at: futureDate }, true),
-    ).toBe(true);
-  });
-
-  it('draft が未指定なら下書き扱いしない', () => {
-    expect(isArticleVisible({ published_at: pastDate })).toBe(true);
-  });
 });

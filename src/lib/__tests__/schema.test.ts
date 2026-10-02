@@ -1,64 +1,80 @@
 import { describe, expect, it } from 'vitest';
 import { HOME_LABEL } from '@/lib/constants';
 import type { Article } from '@/lib/content/types';
-import { siteConfig } from '@/site.config';
-import type { SiteConfig } from '../../site.config';
+import type { SiteConfig } from '@/site.config';
 import {
   createArticleSchema,
   createBreadcrumbSchema,
+  createWebPageSchema,
   createWebSiteSchema,
 } from '../schema';
 
-// Article 型のモックデータを作成するヘルパー関数
-const createMockArticle = (overrides: Partial<Article> = {}): Article => {
-  const defaultArticle: Article = {
-    id: '20240101-test-article',
-    collection: 'articles',
-    body: '## Test',
-    permalink: '/articles/20240101-test-article',
-    data: {
-      title: 'Test Article',
-      summary: 'This is a test article.',
-      cover_image: undefined,
-      published_at: new Date('2024-01-01'),
-      updated_at: new Date('2024-01-01'),
-      draft: false,
-      show_toc: false,
-    },
-  };
-  return { ...defaultArticle, ...overrides };
+const siteUrl = 'https://test.com';
+
+const config: SiteConfig = {
+  title: 'Test Site',
+  siteUrl,
+  description: 'A test website.',
+  articlesPerPage: 10,
+  layout: {
+    width: 'max-w-5xl',
+  },
+  ogp: {
+    defaultImage: { src: '/images/ogp/default.png', width: 1200, height: 630 },
+  },
 };
+
+// Article 型のモックデータを作成するヘルパー関数
+const createMockArticle = (data: Partial<Article['data']> = {}): Article => ({
+  id: '20240101-test-article',
+  collection: 'articles',
+  body: '## Test',
+  permalink: '/articles/20240101-test-article/',
+  data: {
+    title: 'Test Article',
+    summary: 'This is a test article.',
+    published_at: new Date('2024-01-01'),
+    updated_at: new Date('2024-01-02'),
+    draft: false,
+    show_toc: false,
+    ...data,
+  },
+});
 
 describe('createWebSiteSchema', () => {
   it('正しいSiteConfigを渡すと、期待通りのWebSiteスキーマを生成する', () => {
-    const siteConfig: SiteConfig = {
-      title: 'Test Site',
-      siteUrl: 'https://test.com',
-      description: 'A test website.',
-      articlesPerPage: 10,
-      layout: {
-        width: 'max-w-5xl',
-      },
-      ogp: {
-        defaultImage: '/images/ogp/default.png',
-      },
-    };
-
-    const expectedSchema = {
+    expect(createWebSiteSchema(config)).toEqual({
       '@type': 'WebSite',
       '@id': 'https://test.com/#website',
       name: 'Test Site',
       url: 'https://test.com',
       description: 'A test website.',
-    };
+    });
+  });
+});
 
-    expect(createWebSiteSchema(siteConfig)).toEqual(expectedSchema);
+describe('createWebPageSchema', () => {
+  it('permalink を絶対URLにしたWebPageスキーマを生成する', () => {
+    expect(
+      createWebPageSchema(
+        {
+          title: 'About',
+          description: 'About this site.',
+          permalink: '/about/',
+        },
+        siteUrl,
+      ),
+    ).toEqual({
+      '@type': 'WebPage',
+      '@id': 'https://test.com/about/',
+      name: 'About',
+      description: 'About this site.',
+      url: 'https://test.com/about/',
+    });
   });
 });
 
 describe('createBreadcrumbSchema', () => {
-  const siteUrl = 'https://test.com';
-
   it('空のcrumbs配列を渡すと、nullを返す', () => {
     expect(createBreadcrumbSchema([], siteUrl)).toBeNull();
   });
@@ -66,7 +82,7 @@ describe('createBreadcrumbSchema', () => {
   it('有効なcrumbs配列を渡すと、期待通りのBreadcrumbListスキーマを生成する', () => {
     const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: 'Article' }];
 
-    const expectedSchema = {
+    expect(createBreadcrumbSchema(crumbs, siteUrl)).toEqual({
       '@type': 'BreadcrumbList',
       itemListElement: [
         {
@@ -82,33 +98,17 @@ describe('createBreadcrumbSchema', () => {
           item: undefined,
         },
       ],
-    };
-
-    expect(createBreadcrumbSchema(crumbs, siteUrl)).toEqual(expectedSchema);
+    });
   });
 });
 
 describe('createArticleSchema', () => {
-  const siteUrl = 'https://test.com';
-
   it('カバー画像がない記事に対して、正しいスキーマを生成する', () => {
-    const article = createMockArticle({
-      data: {
-        title: 'Test Article',
-        summary: 'This is a test article.',
-        cover_image: undefined,
-        published_at: new Date('2024-01-01'),
-        updated_at: new Date('2024-01-02'),
-        draft: false,
-        show_toc: false,
-      },
-    });
-
-    const schema = createArticleSchema(article, siteUrl, siteConfig);
+    const schema = createArticleSchema(createMockArticle(), config);
 
     expect(schema).toEqual({
       '@type': 'Article',
-      '@id': `${siteUrl}/articles/20240101-test-article`,
+      '@id': `${siteUrl}/articles/20240101-test-article/`,
       headline: 'Test Article',
       description: 'This is a test article.',
       image: undefined,
@@ -116,7 +116,7 @@ describe('createArticleSchema', () => {
       dateModified: '2024-01-02T00:00:00.000Z',
       publisher: {
         '@type': 'Organization',
-        name: 'cabbagekobe.info',
+        name: 'Test Site',
         logo: {
           '@type': 'ImageObject',
           url: `${siteUrl}/favicon.ico`,
@@ -124,65 +124,33 @@ describe('createArticleSchema', () => {
       },
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `${siteUrl}/articles/20240101-test-article`,
+        '@id': `${siteUrl}/articles/20240101-test-article/`,
       },
     });
   });
 
-  it('frontmatter で permalink を上書きした記事では @id にその permalink を使う', () => {
-    const article = createMockArticle({ permalink: '/custom-path/' });
-
-    const schema = createArticleSchema(article, siteUrl, siteConfig);
-
-    expect(schema['@id']).toBe(`${siteUrl}/custom-path/`);
-    expect(schema.mainEntityOfPage['@id']).toBe(`${siteUrl}/custom-path/`);
-  });
-
-  it('コンテンツ内パスのカバー画像を持つ記事に対して、画像パスを解決する', () => {
-    const article = createMockArticle({
-      data: {
-        title: 'Test Article with Image',
-        summary: 'This article has an image.',
-        cover_image: {
-          src: '/src/content/articles/20240101-test-article/image.jpg',
-          width: 1200,
-          height: 630,
-          format: 'jpg',
-        },
-        published_at: new Date('2024-01-01'),
-        updated_at: new Date('2024-01-01'),
-        draft: false,
-        show_toc: false,
-      },
-    });
-
-    const schema = createArticleSchema(article, siteUrl, siteConfig);
-
-    expect(schema.image).toBe('/articles/20240101-test-article/image.jpg');
-  });
-
-  it('相対パスのカバー画像を持つ記事に対して、画像パスを解決する', () => {
-    const article = createMockArticle({
-      data: {
-        title: 'Test Article with Relative Image',
-        summary: 'This article has a relative image.',
-        cover_image: {
-          src: './image.jpg',
-          width: 1200,
-          height: 630,
-          format: 'jpg',
-        },
-        published_at: new Date('2024-01-01'),
-        updated_at: new Date('2024-01-01'),
-        draft: false,
-        show_toc: false,
-      },
-    });
-
-    const schema = createArticleSchema(article, siteUrl, siteConfig);
-
-    expect(schema.image).toBe(
-      '/images/articles/20240101-test-article/image.jpg',
+  it('updated_at がない記事では dateModified に公開日を使う', () => {
+    const schema = createArticleSchema(
+      createMockArticle({ updated_at: undefined }),
+      config,
     );
+
+    expect(schema.dateModified).toBe('2024-01-01T00:00:00.000Z');
+  });
+
+  it('カバー画像を持つ記事では image を絶対URLにする', () => {
+    const schema = createArticleSchema(
+      createMockArticle({
+        cover_image: {
+          src: '/_astro/cover.abc123.jpg',
+          width: 1200,
+          height: 630,
+          format: 'jpg',
+        },
+      }),
+      config,
+    );
+
+    expect(schema.image).toBe('https://test.com/_astro/cover.abc123.jpg');
   });
 });

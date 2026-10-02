@@ -31,9 +31,9 @@ async function takeScreenshots() {
   const routes = await listAllRoutes(); // Get routes directly
 
   if (routes.length === 0) {
-    console.warn('No routes found.');
+    console.error('No routes found. Run `npm run build` first.');
     await browser.close();
-    process.exit(0);
+    process.exit(1);
   }
 
   let screenshotCount = 0;

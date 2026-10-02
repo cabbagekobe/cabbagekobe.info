@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   /*
    * Tailwind 4 では v3 の `<alpha-value>` プレースホルダーは使えない
@@ -16,7 +14,6 @@
   /* インラインコード用テキスト。リンクと同色だが意味的に分離しておく */
   --color-code: rgb(var(--color-link-rgb));
   --color-accent: rgb(var(--color-accent-rgb));
-  --color-primary: rgb(var(--color-accent-rgb));
   --color-line: rgb(var(--color-line-rgb));
   --color-card-background: rgb(var(--color-card-background-rgb));
 
@@ -46,8 +43,6 @@
 
 /* Tokens (必要に応じて拡張) */
 :root {
-  --page-max: 72rem;
-
   /*
    * Light Theme
    * コントラスト比の根拠 (背景 #e8e8e8 / カード #ffffff に対して):
@@ -65,22 +60,25 @@
   --color-card-background-rgb: 255 255 255;
 }
 
-.dark {
-  /*
-   * Dark Theme
-   * コントラスト比の根拠 (背景 #1c1c1c / カード #2c2c2c に対して):
-   * - text-body #ededed: 14.5:1 (本文 7:1 以上)
-   * - text-note #9e9e9e: 6.4:1 / 対カード 5.2:1 (注釈 4.5:1 以上)
-   * - link #a8bcb5: 8.5:1 / 対カード 7.1:1 (本文 7:1 以上)
-   * - line #828282: 4.4:1 / 対カード 3.6:1 (非テキスト 3:1 以上)
-   */
-  --color-background-rgb: 28 28 28;
-  --color-text-body-rgb: 237 237 237;
-  --color-text-note-rgb: 158 158 158;
-  --color-link-rgb: 168 188 181;
-  --color-accent-rgb: 106 123 118;
-  --color-line-rgb: 130 130 130;
-  --color-card-background-rgb: 44 44 44;
+/* OS の配色設定に追従する */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /*
+     * Dark Theme
+     * コントラスト比の根拠 (背景 #1c1c1c / カード #2c2c2c に対して):
+     * - text-body #ededed: 14.5:1 (本文 7:1 以上)
+     * - text-note #9e9e9e: 6.4:1 / 対カード 5.2:1 (注釈 4.5:1 以上)
+     * - link #a8bcb5: 8.5:1 / 対カード 7.1:1 (本文 7:1 以上)
+     * - line #828282: 4.4:1 / 対カード 3.6:1 (非テキスト 3:1 以上)
+     */
+    --color-background-rgb: 28 28 28;
+    --color-text-body-rgb: 237 237 237;
+    --color-text-note-rgb: 158 158 158;
+    --color-link-rgb: 168 188 181;
+    --color-accent-rgb: 106 123 118;
+    --color-line-rgb: 130 130 130;
+    --color-card-background-rgb: 44 44 44;
+  }
 }
 
 html {

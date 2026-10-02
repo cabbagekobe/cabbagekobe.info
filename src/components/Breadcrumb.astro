@@ -1,10 +1,7 @@
 ---
-export interface Crumb {
-  href?: string;
-  label: string;
-}
+import type { Crumb } from '@/lib/schema';
 
-export interface Props {
+interface Props {
   crumbs: Crumb[];
 }
 

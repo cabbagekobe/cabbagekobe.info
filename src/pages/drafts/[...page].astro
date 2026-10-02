@@ -2,7 +2,7 @@
 import type { GetStaticPaths, Page } from 'astro';
 import ArticleListLayout from '@/layouts/ArticleListLayout.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import { getAllArticles } from '@/lib/content/articles';
+import { getAllArticles, sortByPublishedDesc } from '@/lib/content/articles';
 import { isArticleVisible } from '@/lib/content/filters';
 import type { Article } from '@/lib/content/types';
 import { siteConfig } from '@/site.config';
@@ -14,11 +14,9 @@ export const getStaticPaths = (async ({ paginate }) => {
 
   const allArticles = await getAllArticles();
 
-  const previewArticles = allArticles
-    .filter((a) => !isArticleVisible(a.data))
-    .sort(
-      (a, b) => b.data.published_at.valueOf() - a.data.published_at.valueOf(),
-    );
+  const previewArticles = sortByPublishedDesc(
+    allArticles.filter((a) => !isArticleVisible(a.data)),
+  );
 
   return paginate(previewArticles, { pageSize: siteConfig.articlesPerPage });
 }) satisfies GetStaticPaths;
@@ -28,8 +26,8 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const title = `下書き・未来記事一覧 - ${siteConfig.title}`;
-const description = `現在公開されていない記事の一覧です。`;
+const title = '下書き・未来記事一覧';
+const description = '現在公開されていない記事の一覧です。';
 const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: 'Drafts' }];
 ---
 

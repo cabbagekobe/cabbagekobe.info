@@ -17,6 +17,10 @@ async function main() {
   }
 
   const sortedRoutes = await listAllRoutes();
+  if (sortedRoutes.length === 0) {
+    console.error('No routes found. Run `npm run build` first.');
+    process.exit(1);
+  }
 
   console.log('✅ All Site Routes:\n');
   for (const route of sortedRoutes) {

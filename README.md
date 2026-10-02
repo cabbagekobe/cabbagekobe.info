@@ -47,7 +47,7 @@ This site is automatically deployed to GitHub Pages at [https://cabbagekobe.info
 
 4. **Push to GitHub:**
    - Commit the new workflow and CNAME files
-   - Push to the `main` (or `master`) branch
+   - Push to the `main` branch
    - GitHub Actions will automatically build and deploy
 
 ### Auto Deployment
