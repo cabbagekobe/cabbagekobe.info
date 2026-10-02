@@ -3,7 +3,8 @@ import { getCollection, render } from 'astro:content';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import { createBreadcrumbSchema } from '@/lib/schema';
+import { createBreadcrumbSchema, createWebPageSchema } from '@/lib/schema';
+import { siteConfig } from '@/site.config';
 
 const pages = await getCollection('pages');
 const aboutEntry = pages.find((entry) => entry.id === 'about');
@@ -15,17 +16,15 @@ if (!aboutEntry) {
 const { data } = aboutEntry;
 const title = data.title;
 const description = data.summary;
+const permalink = '/about/';
 
 const crumbs = [{ label: HOME_LABEL, href: '/' }, { label: data.title }];
 
-const webPageSchema = {
-  '@type': 'WebPage',
-  '@id': Astro.url.href,
-  name: title,
-  description: description,
-  url: Astro.url.href,
-};
-const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
+const webPageSchema = createWebPageSchema(
+  { title, description, permalink },
+  siteConfig.siteUrl,
+);
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, siteConfig.siteUrl);
 
 const schemas = [webPageSchema, breadcrumbSchema];
 
@@ -35,7 +34,7 @@ const { Content } = await render(aboutEntry);
 <Base
   title={title}
   description={description}
-  permalink="/about/"
+  permalink={permalink}
   schemas={schemas}
 >
   <Breadcrumb crumbs={crumbs} />

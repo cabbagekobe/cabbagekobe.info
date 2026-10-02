@@ -1,12 +1,13 @@
 ---
 import type { Page } from 'astro';
 import ArticleListItem from '@/components/ArticleListItem.astro';
-import type { Crumb } from '@/components/Breadcrumb.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Pagination from '@/components/Pagination.astro';
 import Base from '@/layouts/Base.astro';
 import type { Article } from '@/lib/content/types';
-import { createBreadcrumbSchema } from '@/lib/schema';
+import type { Crumb } from '@/lib/schema';
+import { createBreadcrumbSchema, createWebPageSchema } from '@/lib/schema';
+import { siteConfig } from '@/site.config';
 
 interface Props {
   title?: string;
@@ -21,14 +22,11 @@ interface Props {
 const { title, description, permalink, articles, crumbs, page, noindex } =
   Astro.props;
 
-const webPageSchema = {
-  '@type': 'WebPage',
-  '@id': Astro.url.href,
-  name: title,
-  description: description,
-  url: Astro.url.href,
-};
-const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
+const webPageSchema = createWebPageSchema(
+  { title, description, permalink },
+  siteConfig.siteUrl,
+);
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, siteConfig.siteUrl);
 const schemas = [webPageSchema, breadcrumbSchema];
 ---
 <Base

@@ -3,23 +3,18 @@ import { render } from 'astro:content';
 import OGPCard from '@/components/articles/OGPCard.astro';
 import RelatedArticles from '@/components/articles/RelatedArticles.astro';
 import TableOfContents from '@/components/articles/TableOfContents.astro';
-import type { Crumb } from '@/components/Breadcrumb.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Base from '@/layouts/Base.astro';
 import { HOME_LABEL } from '@/lib/constants';
-import { getAllArticles, getRelatedArticles } from '@/lib/content/articles';
-import { isArticleVisible } from '@/lib/content/filters';
+import { getArticlesToBuild, getRelatedArticles } from '@/lib/content/articles';
 import type { Article } from '@/lib/content/types';
-import { formatDate, resolveCoverImagePath } from '@/lib/content/utils';
+import { formatDate } from '@/lib/content/utils';
+import type { Crumb } from '@/lib/schema';
 import { createArticleSchema, createBreadcrumbSchema } from '@/lib/schema';
 import { siteConfig } from '@/site.config';
 
 export async function getStaticPaths() {
-  const allArticles = await getAllArticles();
-
-  const articlesToBuild = import.meta.env.PROD
-    ? allArticles.filter(({ data }) => isArticleVisible(data))
-    : allArticles;
+  const articlesToBuild = await getArticlesToBuild();
 
   return articlesToBuild.map((currentArticle) => ({
     params: { slug: currentArticle.id },
@@ -34,26 +29,18 @@ interface Props {
 
 const { article, allArticles } = Astro.props;
 const { data } = article;
-const slug = article.id;
 
 const { title, summary, meta_title, meta_description, cover_image } = data;
 
 const crumbs: Crumb[] = [{ href: '/', label: HOME_LABEL }, { label: title }];
-
-// カバー画像のパスを解決
-const coverSrc = resolveCoverImagePath(cover_image, slug);
 
 // TOCの取得
 const { Content, headings } = await render(article);
 
 const related = getRelatedArticles(article, allArticles);
 
-const articleSchema = createArticleSchema(
-  article,
-  Astro.url.origin,
-  siteConfig,
-);
-const breadcrumbSchema = createBreadcrumbSchema(crumbs, Astro.url.origin);
+const articleSchema = createArticleSchema(article, siteConfig);
+const breadcrumbSchema = createBreadcrumbSchema(crumbs, siteConfig.siteUrl);
 const schemas = [articleSchema, breadcrumbSchema];
 ---
 
@@ -63,7 +50,7 @@ const schemas = [articleSchema, breadcrumbSchema];
   permalink={article.permalink}
   og={{
     type: 'article',
-    image: coverSrc,
+    image: cover_image,
     publishedTime: data.published_at.toISOString(),
     modifiedTime: (
       data.updated_at ?? data.published_at
@@ -78,12 +65,13 @@ const schemas = [articleSchema, breadcrumbSchema];
       <h1 class="text-scale-3 font-extrabold mb-4 leading-tight">{title}</h1>
 
       {
-        coverSrc && (
+        cover_image && (
           <figure class="mb-4">
             <img
-              src={coverSrc}
+              src={cover_image.src}
+              width={cover_image.width}
+              height={cover_image.height}
               alt={title}
-              loading="lazy"
               class="w-full h-auto rounded-lg"
             />
             {data.cover_caption && (
@@ -96,29 +84,19 @@ const schemas = [articleSchema, breadcrumbSchema];
       }
 
       <div class="article-meta flex items-center text-scale--1 text-text-note">
-        {
-          data.published_at && (
-            <time datetime={data.published_at.toISOString()} class="mr-3">
-              {formatDate(data.published_at)}
-            </time>
-          )
-        }
+        <time datetime={data.published_at.toISOString()} class="mr-3">
+          {formatDate(data.published_at)}
+        </time>
       </div>
       {summary && <p class="text-scale--1 text-text-note my-6">{summary}</p>}
 
       {/* TOCを記事コンテンツの直前に配置 */}
-      {headings && headings.length > 0 && data.show_toc === true && (
-        <TableOfContents headings={headings} />
-      )}
+      {data.show_toc && <TableOfContents headings={headings} />}
     </div>
 
     {/* MDXコンテンツのレンダリング */}
     <div class="article-content">
-      <Content
-          components={{
-          OGPCard
-          }}
-        />
+      <Content components={{ OGPCard }} />
     </div>
   </article>
 

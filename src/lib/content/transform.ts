@@ -1,6 +1,6 @@
 // エントリをArticleオブジェクトに変換するユーティリティ関数
 import type { CollectionEntry } from 'astro:content';
-import type { Article } from '@/lib/content/types';
+import type { Article } from './types';
 import { buildPermalink } from './utils';
 
 /**
@@ -12,6 +12,5 @@ import { buildPermalink } from './utils';
 export function transformEntryToArticle(
   entry: CollectionEntry<'articles'>,
 ): Article {
-  const permalink = buildPermalink(entry.id, entry.data.permalink);
-  return { ...entry, permalink };
+  return { ...entry, permalink: buildPermalink(entry.id) };
 }

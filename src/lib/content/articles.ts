@@ -13,17 +13,36 @@ export async function getAllArticles(): Promise<Article[]> {
 }
 
 /**
+ * 記事を公開日降順に並べた新しい配列を返します。
+ * @param articles 並べ替える記事の配列。
+ * @returns 公開日降順の記事の配列。
+ */
+export function sortByPublishedDesc(articles: Article[]): Article[] {
+  return articles.toSorted(
+    (a, b) => b.data.published_at.valueOf() - a.data.published_at.valueOf(),
+  );
+}
+
+/**
  * 公開済みの記事を取得し、公開日降順でソートして返します。
  * 下書きや未来日付の記事は除外されます。
  * @returns 公開済み記事の配列（公開日降順）。
  */
 export async function getAllPublishedArticles(): Promise<Article[]> {
   const articles = await getAllArticles();
-  return articles
-    .filter((a) => isArticleVisible(a.data))
-    .sort(
-      (a, b) => b.data.published_at.valueOf() - a.data.published_at.valueOf(),
-    );
+  return sortByPublishedDesc(articles.filter((a) => isArticleVisible(a.data)));
+}
+
+/**
+ * 個別ページを生成する対象の記事を取得します。
+ * 本番ビルドでは公開済みの記事のみ、開発時は下書き・未来日付も含めた全記事を返します。
+ * @returns ページ生成対象の記事の配列。
+ */
+export async function getArticlesToBuild(): Promise<Article[]> {
+  const articles = await getAllArticles();
+  return import.meta.env.PROD
+    ? articles.filter((a) => isArticleVisible(a.data))
+    : articles;
 }
 
 /**

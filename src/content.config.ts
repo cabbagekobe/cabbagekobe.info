@@ -11,7 +11,7 @@ const contentPattern = [
 
 const pagesCollection = defineCollection({
   loader: glob({ pattern: contentPattern, base: './src/content/pages' }),
-  schema: z.object({
+  schema: z.strictObject({
     title: z.string(),
     summary: z.string(),
     published_at: z.date().optional(),
@@ -24,15 +24,15 @@ const articlesCollection = defineCollection({
     pattern: contentPattern,
     base: './src/content/articles',
   }),
+  // 未知のキーはエラーにする（項目名の打ち間違いで下書きが公開されるのを防ぐ）
   schema: ({ image }) =>
-    z.object({
+    z.strictObject({
       title: z.string(),
       published_at: z.date(),
       updated_at: z.date().optional(),
       summary: z.string().optional(),
       meta_title: z.string().optional(),
       meta_description: z.string().optional(),
-      permalink: z.string().optional(),
       draft: z.boolean().default(false),
       cover_image: image().optional(),
       cover_caption: z.string().optional(),

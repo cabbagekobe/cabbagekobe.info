@@ -19,7 +19,7 @@ const ogp = getOgp(url);
       <div class="flex flex-1 flex-col justify-center p-4 overflow-hidden">
         <div class="truncate font-bold text-text-body underline group-hover:decoration-2">{ogp.title || url}</div>
         <div class="mt-1 text-scale--1 text-text-body line-clamp-1">{ogp.description || ''}</div>
-        <div class="mt-auto truncate pt-1 text-scale--1 text-text-note">{ogp.siteName || new URL(url).hostname}</div>
+        <div class="mt-auto truncate pt-1 text-scale--1 text-text-note">{new URL(url).hostname}</div>
       </div>
       <span class="sr-only">（新しいタブで開く）</span>
     </a>

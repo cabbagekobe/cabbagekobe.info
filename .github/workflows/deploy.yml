@@ -2,17 +2,13 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
+# 書き込み権限は deploy ジョブだけに渡す（PR の検証では不要なため）
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -42,17 +38,27 @@ jobs:
       - name: Test
         run: npm run test
 
+      # PR では検証のみ行い、デプロイ用の成果物は作らない
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
   deploy:
+    if: github.event_name != 'pull_request'
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    # 進行中のデプロイは中断せず、後続を待たせる
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

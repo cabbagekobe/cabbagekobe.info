@@ -1,7 +1,6 @@
 ---
 title: 櫻坂46の推し、大園玲さん初センター曲『COOL』のMVが公開された
 published_at: 2023-02-08T23:00:00.000Z
-description: https://www.youtube.com/watch?v=XEKPn3WbksE より
 cover_image: "./images/out.jpg"
 ---
 

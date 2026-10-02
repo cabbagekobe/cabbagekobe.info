@@ -9,6 +9,6 @@ export const siteConfig = {
     width: 'max-w-5xl',
   },
   ogp: {
-    defaultImage: '/images/ogp/default.png',
+    defaultImage: { src: '/images/ogp/default.png', width: 1200, height: 630 },
   },
 };

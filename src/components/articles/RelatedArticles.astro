@@ -17,12 +17,10 @@ const { related } = Astro.props;
         {related.map((r) => (
           <li>
             <a href={r.permalink} class="text-scale-0 underline hover:decoration-2 text-text-body">{r.data.title}</a>
-            {r.data.published_at && (
-              <small class="text-text-note text-scale--1">
-                {' — '}
-                {formatDate(r.data.published_at)}
-              </small>
-            )}
+            <small class="text-text-note text-scale--1">
+              {' — '}
+              {formatDate(r.data.published_at)}
+            </small>
           </li>
         ))}
       </ul>

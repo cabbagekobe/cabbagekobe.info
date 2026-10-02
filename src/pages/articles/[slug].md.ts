@@ -1,29 +1,25 @@
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import {
-  filterVisibleArticleFiles,
-  loadArticleFiles,
-} from '@/lib/content/files';
+import { getArticlesToBuild } from '@/lib/content/articles';
 
 export async function getStaticPaths() {
-  const files = await loadArticleFiles();
+  // HTML ページと同じ対象（本番では下書き・未来日付の記事を除外）を配信する
+  const articles = await getArticlesToBuild();
 
-  // 本番ビルドでは HTML ページと同様に下書き・未来日付の記事を除外する
-  const visibleFiles = filterVisibleArticleFiles(files, !import.meta.env.PROD);
-
-  return visibleFiles.map(({ slug, filepath }) => ({
-    params: { slug },
-    props: { filepath },
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { filePath: article.filePath },
   }));
 }
 
 export async function GET({
   props,
 }: {
-  props: { filepath: string };
+  props: { filePath?: string };
 }): Promise<Response> {
-  const absolutePath = path.resolve(process.cwd(), props.filepath);
-  const content = await readFile(absolutePath, 'utf-8');
+  if (!props.filePath) {
+    throw new Error('記事のファイルパスを取得できませんでした。');
+  }
+  const content = await readFile(props.filePath, 'utf-8');
 
   return new Response(content, {
     status: 200,

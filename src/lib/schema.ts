@@ -1,7 +1,13 @@
-import type { Crumb } from '@/components/Breadcrumb.astro';
 import type { Article } from '@/lib/content/types';
-import { resolveCoverImagePath } from '@/lib/content/utils';
 import type { SiteConfig } from '@/site.config';
+
+/**
+ * パンくずリストの1項目。href がない項目は現在のページを表します。
+ */
+export type Crumb = {
+  href?: string;
+  label: string;
+};
 
 export const createWebSiteSchema = (config: SiteConfig) => {
   return {
@@ -10,6 +16,26 @@ export const createWebSiteSchema = (config: SiteConfig) => {
     name: config.title,
     url: config.siteUrl,
     description: config.description,
+  };
+};
+
+/**
+ * WebPageスキーマを生成
+ * @param page ページのタイトル・説明・パーマリンク
+ * @param siteUrl サイトURL
+ * @returns WebPageスキーマオブジェクト
+ */
+export const createWebPageSchema = (
+  page: { title?: string; description?: string; permalink: string },
+  siteUrl: string,
+) => {
+  const url = new URL(page.permalink, siteUrl).href;
+  return {
+    '@type': 'WebPage',
+    '@id': url,
+    name: page.title,
+    description: page.description,
+    url,
   };
 };
 
@@ -34,27 +60,20 @@ export const createBreadcrumbSchema = (
 /**
  * Articleスキーマを生成
  * @param article 記事データ
- * @param siteUrl サイトURL
+ * @param config サイト設定
  * @returns Articleスキーマオブジェクト
  */
-export const createArticleSchema = (
-  article: Article,
-  siteUrl: string,
-  config: SiteConfig,
-) => {
+export const createArticleSchema = (article: Article, config: SiteConfig) => {
   const { title, summary, cover_image, published_at, updated_at } =
     article.data;
-  const coverSrc = cover_image
-    ? resolveCoverImagePath(cover_image, article.id)
-    : undefined;
-  const articleUrl = new URL(article.permalink, siteUrl).href;
+  const articleUrl = new URL(article.permalink, config.siteUrl).href;
 
   return {
     '@type': 'Article',
     '@id': articleUrl,
     headline: title,
     description: summary,
-    image: coverSrc,
+    image: cover_image && new URL(cover_image.src, config.siteUrl).href,
     datePublished: published_at.toISOString(),
     dateModified: (updated_at ?? published_at).toISOString(),
     publisher: {
@@ -62,7 +81,7 @@ export const createArticleSchema = (
       name: config.title,
       logo: {
         '@type': 'ImageObject',
-        url: new URL('/favicon.ico', siteUrl).href,
+        url: new URL('/favicon.ico', config.siteUrl).href,
       },
     },
     mainEntityOfPage: {
