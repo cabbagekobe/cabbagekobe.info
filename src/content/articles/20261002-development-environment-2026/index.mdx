@@ -1,0 +1,123 @@
+---
+title: '開発環境現状確認 2026'
+published_at: 2026-10-01T00:00:00.000
+cover_image: "./images/out.jpg"
+cover_caption: fastfetchの図
+summary: '2026年10月時点の開発環境'
+show_toc: true
+---
+
+2026年、複数の方が開発環境について書いていたので2026年10月時点のスナップショットも兼ねて自分も流行りに乗ります。
+
+[「開発環境現状確認」の検索結果 - はてなブックマーク](https://b.hatena.ne.jp/q/%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83%E7%8F%BE%E7%8A%B6%E7%A2%BA%E8%AA%8D)
+
+
+Webエンジニア。  
+なるべく属人的な感じにならないように色々していきたいですね。
+
+
+## OS・マシン
+
+- Mac mini（M4 Pro、メモリ 24GB）
+
+年始に購入。  
+なんか最近のPC購入でモバイルPCのバッテリー膨張に悩まされていた。ということでなんかもういいや…って感じで久しぶりにデスクトップPC！  
+（余談ですが、このPC購入1ヶ月ほどで週1の会社への出勤が決まったので、そういう意味でもギリギリ持ち出せるMac miniでよかった。）
+
+- ミニ PC（Intel N100、Arch Linux）
+
+Archを最低限入れてたまになんかをなんかしている。
+
+
+## エディタ
+
+- Neovim
+  - プラグイン管理: lazy.nvim
+  - ファイル操作: fzf-lua、neo-tree.nvim、yazi.nvim
+  - LSP: nvim-lspconfig、mason.nvim、mason-lspconfig.nvim
+- Visual Studio Code
+  - PHP: Intelephense、PHP Tools（DEVSENSE）
+  - そのほか: GitLens、Dev Containers、Docker、Marp for VS Code
+
+基本的にはNeovimで活動している。完全に形から入る感じでvimを使い始めていつのまにかNeovimへ…  
+今から他にいくのも難しいね〜
+
+## コーディングエージェント
+
+- Kilo Code CLI
+- Claude Code
+
+最近はClaude Codeをバンバン使っているものの、しばらくはKilo Code CLIをいろんな無料のモデルでガチャガチャやってました。  
+けど、今から思い返すと、その頃にレベルが低いモデルで丁寧なプロンプトを書いていたことは重要だったかも〜。
+
+特に難しいことはやっていないかもしれない。  
+とはいえ、CLIだけではなくて、Macのデスクトップアプリ/iOSのClaudeも使うようになっている。 `claude rc` で外部から上記MiniPCを操作したりしてる。
+
+
+## ターミナルエミュレータ
+
+- WezTerm
+  - カラースキーム: Kanagawa
+  - 背景を少し透過、タイトルバーは非表示
+  - ペインの分割と移動を Ctrl + Shift のキーバインドに割り当て
+
+これも難しいことは特にしていない。
+
+## ターミナルのフォント
+
+- HackGen Console NF
+
+## シェル
+
+- zsh（プラグインマネージャーなし）
+- プロンプト: Starship
+- 履歴検索: fzf（Ctrl + r）
+- ディレクトリ移動: zoxide
+
+## ランチャー
+
+- Raycast
+  使いこなせてなし
+
+- BetterTouchTool
+  使いこなせてなし
+
+## ブラウザ
+
+- Vivaldi
+  メインブラウザ
+
+- Google Chrome
+
+- Safari
+
+## セットアップ・パッケージ管理
+
+- Homebrew
+- mise（Node.js は LTS、Go は最新）
+
+## dotfiles
+
+- 管理ツールは使っていない
+- Neovim の設定は GitHub のリポジトリで管理
+- WezTerm の設定はローカルの git で管理
+
+## Docker
+
+- Colima
+- lazydocker
+- DDEV
+
+## CLI ツール・Git
+
+- Git: lazygit、gh
+- ファイラー: yazi
+- 置き換え系: eza、bat、fd、ripgrep
+- そのほか: jq、just、lefthook、gitleaks、bottom
+
+
+## まとめ
+
+とかとか。  
+随時更新していくかもしれない。
+
