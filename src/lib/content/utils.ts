@@ -11,6 +11,7 @@ export function buildPermalink(slug: string): string {
 
 /**
  * Dateオブジェクトを'ja-JP'ロケールの'yyyy/MM/dd'形式にフォーマットします。
+ * ビルド環境のタイムゾーン（CI は UTC）で日付が変わらないよう、日本時間に固定します。
  * @param date フォーマットする日付。
  * @returns フォーマットされた日付文字列。
  */
@@ -19,5 +20,6 @@ export function formatDate(date: Date): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    timeZone: 'Asia/Tokyo',
   });
 }
