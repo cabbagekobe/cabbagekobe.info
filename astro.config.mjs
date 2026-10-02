@@ -16,5 +16,11 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  integrations: [sitemap(), compress(), mdx()],
+  integrations: [
+    sitemap(),
+    // CSS は Vite が圧縮済み。compress の CSS 圧縮 (csso) は Tailwind 4 が出力する
+    // `@media (width >= 48rem)` を解釈できず md: のルールを捨てるため無効にする
+    compress({ CSS: false }),
+    mdx(),
+  ],
 });
